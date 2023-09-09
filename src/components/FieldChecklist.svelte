@@ -9,7 +9,7 @@
     on:keydown={() => isFocused = true}
     tabindex={30}
     role="button"
-    class={(isFocused ? "h-[146px] " : "h-[46px] ") + "flex flex-col justify-between w-full max-w-[598px] mx-auto mt-4 mb-2 px-4 py-3 shadow rounded-lg bg-systemDark border border-systemGray md:mt-8"}
+    class={(isFocused ? "h-[146px] " : "h-[46px] ") + "flex flex-col justify-between w-full max-w-[598px] mx-auto mt-4 mb-2 px-4 py-3 shadow-[0_1px_2px_0_rgba(0,0,0,0.6),_0_2px_6px_2px_rgba(0,0,0,0.302)] rounded-lg bg-systemDark border border-systemGray md:mt-8"}
 >
     <div>
         <input
@@ -21,7 +21,7 @@
         <input
             bind:value={description}
             placeholder="Criar uma nota..."
-            class={(isFocused ? "py-3 " : "h-full ") + "w-full px-1 placeholder:font-medium bg-systemDark text-systemWhite text-sm outline-none"}
+            class={(isFocused ? "py-3 " : "h-full ") + "w-full px-1 placeholder:font-medium bg-systemDark text-systemWhite outline-none"}
         />
     </div>
 
