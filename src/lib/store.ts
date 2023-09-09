@@ -1,20 +1,14 @@
 import { writable } from 'svelte/store';
-
-interface Itask {
-    id: number;
-    title: string;
-    description: string;
-    done: boolean;
-}
+import type { ITaskModel } from './models/task';
 
 function createTasks() {
-	const { subscribe, set, update } = writable<Itask[]>([]);
+	const { subscribe, update } = writable<ITaskModel[]>([]);
 
-    function addTask(task: Itask) {
+    function addTask(task: ITaskModel) {
         update(tasks => [...tasks, task]);
     }
 
-    function updateTask(id: number, task: Itask) {
+    function updateTask(id: number, task: ITaskModel) {
         update(tasks => tasks.map(taskItem => taskItem.id === id ? task : taskItem));
     }
 
@@ -23,7 +17,7 @@ function createTasks() {
     }
 
 	return {
-		// subscribe,
+		subscribe,
 		addTask,
 		updateTask,
 		removeTask

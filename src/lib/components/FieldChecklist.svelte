@@ -1,7 +1,31 @@
 <script lang="ts">
+  import type { ITaskView } from "../models/task";
+  import { tasks } from "../store";
+
     let title = '';
     let description = '';
     let isFocused = false;
+
+    function validate(): boolean {
+        return true;
+    }
+
+    function handleClickConcluded(): void {
+        if (validate()) {
+            isFocused = false;
+
+            // criar requisição para adicionar task no bd
+            const newTask: ITaskView = {
+                title: title,
+                description: description,
+                done: false
+            };
+            // tasks.addTask(newTask);
+
+            title = '';
+            description = '';
+        }
+    }
 </script>
 
 <div
@@ -26,6 +50,6 @@
     </div>
 
     <div class={(isFocused ? "block " : "hidden ") + "self-end"}>
-        <button on:click|stopPropagation={() => isFocused = false} class={"pt-2 px-6 text-systemWhiteLight"}>concluir</button>
+        <button on:click|stopPropagation={handleClickConcluded} class={"pt-2 px-6 text-systemWhiteLight"}>concluir</button>
     </div>
 </div>

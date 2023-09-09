@@ -1,7 +1,7 @@
 <script lang="ts">
     import '../app.css';
-    import FieldChecklist from '../components/FieldChecklist.svelte';
-    import Checklist from '../components/Checklist.svelte';
+    import Checklist from '../lib/components/Checklist.svelte';
+    import FieldChecklist from '../lib/components/FieldChecklist.svelte';
 </script>
 
 <main>
