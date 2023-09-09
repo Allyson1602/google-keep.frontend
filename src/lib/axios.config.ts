@@ -6,7 +6,7 @@ const initializeAxios = (config: AxiosRequestConfig): AxiosInstance => {
     return axios.create(config);
 };
 
-const axiosRequestConfiguration: AxiosRequestConfig = {
+const initialConfig: AxiosRequestConfig = {
     baseURL: 'http://localhost:3006',
     responseType: 'json',
     headers: {
@@ -14,7 +14,7 @@ const axiosRequestConfiguration: AxiosRequestConfig = {
     }
 };
 
-const axiosInstance = initializeAxios(axiosRequestConfiguration);
+const axiosInstance = initializeAxios(initialConfig);
 
 export interface IApiRestClient {
     get: <T>(url: string, queryParams?: object) => IResponse<T>;
