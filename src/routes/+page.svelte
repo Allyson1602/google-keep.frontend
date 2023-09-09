@@ -1,9 +1,23 @@
-<h1 class="text-3xl font-bold underline">
-    Hello world!
-</h1>
+<script lang="ts">
+    import '../app.css';
+    import FieldChecklist from '../components/FieldChecklist.svelte';
+    import Checklist from '../components/Checklist.svelte';
+</script>
+
+<main>
+    <header>
+        <FieldChecklist />
+    </header>
+
+    <div>
+        {#each [] as {}}
+            <Checklist />
+        {/each}
+    </div>
+</main>
   
 <style lang="postcss">
     :global(html) {
-        background-color: theme(colors.gray.100);
+        background-color: theme(backgroundColor);
     }
 </style>
