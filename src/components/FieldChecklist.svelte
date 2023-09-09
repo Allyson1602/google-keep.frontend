@@ -21,7 +21,7 @@
         <input
             bind:value={description}
             placeholder="Criar uma nota..."
-            class={(isFocused ? "py-3 " : "h-full ") + "w-full px-1 font-medium bg-systemDark text-systemWhite text-sm outline-none"}
+            class={(isFocused ? "py-3 " : "h-full ") + "w-full px-1 placeholder:font-medium bg-systemDark text-systemWhite text-sm outline-none"}
         />
     </div>
 

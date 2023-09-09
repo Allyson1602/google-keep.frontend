@@ -11,7 +11,6 @@ export default {
         systemDark: '#202124',
         systemGray: '#5f6368',
         systemWhite: '#e8eaed',
-        systemWhiteLight: '#dadce0',
       },
     },
   },
