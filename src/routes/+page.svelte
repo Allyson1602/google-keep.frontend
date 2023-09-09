@@ -5,7 +5,7 @@
 </script>
 
 <main>
-    <header>
+    <header class="px-1">
         <FieldChecklist />
     </header>
 
