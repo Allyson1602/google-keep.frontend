@@ -18,6 +18,6 @@
   
 <style lang="postcss">
     :global(html) {
-        background-color: theme(backgroundColor);
+        background-color: theme(colors.systemDark);
     }
 </style>
