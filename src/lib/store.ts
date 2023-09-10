@@ -37,8 +37,8 @@ function createListings() {
         update(listings => [...listings, listing]);
     }
 
-    function updateListing(id: number, listing: IListingModel) {
-        update(listings => listings.map(listingItem => listingItem.id === id ? listing : listingItem));
+    function updateListing(listing: IListingModel) {
+        update(listings => listings.map(listingItem => listingItem.id === listing.id ? listing : listingItem));
     }
 
     function removeListing(id: number) {
