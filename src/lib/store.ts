@@ -8,14 +8,17 @@ function createListings() {
             title: 'Listing 1',
             tasks: [
                 {
+                    id: new Date().getTime() + parseInt(crypto.randomUUID()),
                     description: 'Description 1',
                     done: false
                 },
                 {
+                    id: new Date().getTime() + parseInt(crypto.randomUUID()),
                     description: 'Description 3',
                     done: true
                 },
                 {
+                    id: new Date().getTime() + parseInt(crypto.randomUUID()),
                     description: 'Description 4',
                     done: false
                 }
@@ -26,6 +29,7 @@ function createListings() {
             title: 'Listing 2',
             tasks: [
                 {
+                    id: new Date().getTime() + parseInt(crypto.randomUUID()),
                     description: 'Description 2',
                     done: true
                 }

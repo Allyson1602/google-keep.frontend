@@ -43,7 +43,7 @@
         };
 
         const alterTaskListing = listing.tasks.map(taskItem => {
-            if (taskItem.description === task.description) {
+            if (taskItem.id === task.id) {
                 return task;
             }
 
@@ -65,7 +65,7 @@
         };
 
         const alterTaskListing = listing.tasks.map(taskItem => {
-            if (taskItem.description === task.description) {
+            if (taskItem.id === task.id) {
                 return task;
             }
 
