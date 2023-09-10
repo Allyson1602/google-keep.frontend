@@ -1,24 +1,26 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
-    import { tasks } from "../store";
+    import { listings } from "../store";
 </script>
 
 <div>
-    {#if $tasks.length > 0}
+    {#if $listings.length > 0}
         <div class="w-full max-w-[598px] mx-auto mt-6">
-            {#each $tasks as task (task.id)}
+            {#each $listings as listing (listing.id)}
                 <div class="px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
-                    <p class="text-base font-medium text-systemWhiteLight">{task.title}</p>
+                    <p class="text-base font-medium text-systemWhiteLight">{listing.title}</p>
 
                     <div class="flex flex-col gap-2 mt-3">
-                        <div class="flex items-center gap-2">
-                            <input
-                                id="description"
-                                type="checkbox"
-                                class="w-[18px] h-[18px] text-blue-600 bg-systemDark border-systemGray rounded"
-                            />
-                            <label for="description" class="text-systemWhiteLight">{task.description}</label>
-                        </div>
+                        {#each listing.tasks as task (task.description)}
+                            <div class="flex items-center gap-2">
+                                <input
+                                    id="description"
+                                    type="checkbox"
+                                    class="w-[18px] h-[18px] text-blue-600 bg-systemDark border-systemGray rounded"
+                                />
+                                <label for="description" class="text-systemWhiteLight">{task.description}</label>
+                            </div>
+                        {/each}
                     </div>
                 </div>
             {/each}

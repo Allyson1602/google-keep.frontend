@@ -1,40 +1,56 @@
 import { writable } from 'svelte/store';
-import type { ITaskModel } from './models/task.model';
+import type { IListingModel } from './models/listing.model';
 
-function createTasks() {
-	const { subscribe, update } = writable<ITaskModel[]>([
+function createListings() {
+	const { subscribe, update } = writable<IListingModel[]>([
         {
             id: 1,
-            title: 'Task 1',
-            description: 'Description 1',
-            done: false
+            title: 'Listing 1',
+            tasks: [
+                {
+                    description: 'Description 1',
+                    done: false
+                },
+                {
+                    description: 'Description 3',
+                    done: false
+                },
+                {
+                    description: 'Description 4',
+                    done: false
+                }
+            ]
         },
         {
             id: 2,
-            title: 'Task 2',
-            description: 'Description 2',
-            done: false
+            title: 'Listing 2',
+            tasks: [
+                {
+                    description: 'Description 2',
+                    done: false
+                }
+            ]
         }
     ]);
 
-    function addTask(task: ITaskModel) {
-        update(tasks => [...tasks, task]);
+    function addListing(listing: IListingModel) {
+        update(listings => [...listings, listing]);
     }
 
-    function updateTask(id: number, task: ITaskModel) {
-        update(tasks => tasks.map(taskItem => taskItem.id === id ? task : taskItem));
+    function updateListing(id: number, listing: IListingModel) {
+        update(listings => listings.map(listingItem => listingItem.id === id ? listing : listingItem));
     }
 
-    function removeTask(id: number) {
-        update(tasks => tasks.filter(taskItem => taskItem.id !== id));
+    function removeListing(id: number) {
+        update(listings => listings.filter(listingItem => listingItem.id !== id));
     }
 
 	return {
 		subscribe,
-		addTask,
-		updateTask,
-		removeTask
+		addListing,
+		updateListing,
+		removeListing
 	};
 }
 
-export const tasks = createTasks();
+export const listings = createListings();

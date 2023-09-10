@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { AxiosResponse } from "axios";
-    import type { ITaskModel, ITaskView } from "../models/task.model";
-    import taskService from "../services/task.service";
-    import { tasks } from "../store";
+    import type { IListingModel, IListingView } from "../models/listing.model";
+    import listingService from "../services/listing.service";
+    import { listings } from "../store";
 
     let title = '';
     let description = '';
@@ -32,18 +32,22 @@
         description = '';
     }
 
-    function addTask(): void {
+    function addListing(): void {
         if (!validate()) return;
 
-        const newTask: ITaskView = {
+        const newListing: IListingView = {
             title: title,
-            description: description,
-            done: false
+            tasks: [
+                {
+                    description: description,
+                    done: false
+                }
+            ]
         };
 
-        taskService.addTask(getUserId(), newTask).then((response: AxiosResponse<ITaskModel>) => {
+        listingService.addListing(getUserId(), newListing).then((response: AxiosResponse<IListingModel>) => {
             if (response.status === 201 && response.data) {
-                tasks.addTask(response.data);
+                listings.addListing(response.data);
             }
         });
 
@@ -52,7 +56,7 @@
     }
 
     function handleClickConcluded(): void {
-        addTask();
+        addListing();
     }
 </script>
 
