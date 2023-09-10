@@ -1,11 +1,14 @@
 <script lang="ts">
     import { tick } from "svelte";
-    import type { IListingModel, ITask } from "../models/listing.model";
+    import type { IListing, ITask } from "../models/listing.model";
     import Icon from "@iconify/svelte";
 
     let isNewTask = false;
+    export function save(listing: IListing) {
+
+    };
     export let isFocused = false;
-    export let listing: IListingModel = {
+    export let listing: IListing = {
         id: 0,
         title: "",
         tasks: []

@@ -4,12 +4,7 @@ export interface ITask {
     done: boolean;
 }
 
-export interface IListingView {
-    title: string;
-    tasks: ITask[];
-}
-
-export interface IListingModel {
+export interface IListing {
     id: number;
     title: string;
     tasks: ITask[];

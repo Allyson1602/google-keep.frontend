@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { listings } from "../store";
-    import type { IListingModel } from '../models/listing.model';
+    import type { IListing } from '../models/listing.model';
     import listingService from '../services/listing.service';
     import FieldTask from './FieldTask.svelte';
 
@@ -9,7 +9,7 @@
         listingService.removeListing(listingId);
     }
     
-    function updateListing(listing: IListingModel) {
+    function updateListing(listing: IListing) {
         listingService.updateListing(listing).then((response) => {
             if (response.status === 200 && response.data) {
                 listings.updateListing(response.data);
@@ -17,12 +17,12 @@
         });
     }
     
-    function handleChangeTitle(listing: IListingModel, ev: Event): void {
+    function handleChangeTitle(listing: IListing, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
         if (target.value.trim() === "") return;
 
-        const newTitleListing: IListingModel = {
+        const newTitleListing: IListing = {
             ...listing,
             title: target.value
         }
@@ -33,14 +33,14 @@
         removeListing(listingId);
     }
     
-    function handleClickUpdate(listing: IListingModel): void {
+    function handleClickUpdate(listing: IListing): void {
         updateListing(listing);
     }
 </script>
 
 <div class="max-w-[1248px] mx-auto">
     {#if $listings.length > 0}
-        <div class="flex gap-2 justify-center lg:justify-start flex-col md:flex-row lg:max-w-[752px] max-w-[504px] mx-auto w-full mt-6">
+        <div class="flex flex-wrap gap-2 justify-center lg:justify-start flex-col md:flex-row lg:max-w-[752px] max-w-[504px] mx-auto w-full mt-6">
             {#each $listings as listing (listing.id)}
                 <div class="flex flex-col justify-between gap-3 w-full md:w-[238px] px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
                     <div>
@@ -60,7 +60,7 @@
                     </div>
 
                     <div class={"self-end"}>
-                        <button on:click={() => handleClickUpdate(listing)} class={"pt-2 px-1 text-systemWhiteLight"}>atualizar</button>
+                        <button on:click={() => handleClickUpdate(listing)} class={"pt-2 px-1 text-systemWhiteLight hover:text-green-700"}>atualizar</button>
                     </div>
                 </div>
             {/each}

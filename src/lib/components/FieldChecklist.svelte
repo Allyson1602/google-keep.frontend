@@ -1,11 +1,12 @@
 <script lang="ts">
     import type { AxiosResponse } from "axios";
-    import type { IListingModel, IListingView } from "../models/listing.model";
+    import type { IListing } from "../models/listing.model";
     import listingService from "../services/listing.service";
     import { listings } from "../store";
     import FieldTask from "./FieldTask.svelte";
 
-    let newListing: IListingView = {
+    let newListing: IListing = {
+        id: 0,
         title: "",
         tasks: []
     };
@@ -26,13 +27,14 @@
         isFocused = false;
 
         newListing = {
+            id: 0,
             title: '',
             tasks: []
         };
     }
 
     function addListing(): void {
-        listingService.addListing(getUserId(), newListing).then((response: AxiosResponse<IListingModel>) => {
+        listingService.addListing(getUserId(), newListing).then((response: AxiosResponse<IListing>) => {
             if (response.status === 201 && response.data) {
                 listings.addListing(response.data);
             }
@@ -77,6 +79,6 @@
     <FieldTask isFocused={isFocused} />
 
     <div class={(isFocused ? "block " : "hidden ") + "self-end"}>
-        <button on:click|stopPropagation={handleClickConcluded} class={"pt-2 px-6 text-systemWhiteLight"}>criar</button>
+        <button on:click|stopPropagation={handleClickConcluded} class={"pt-2 px-6 text-systemWhiteLight hover:text-green-700"}>criar</button>
     </div>
 </div>
