@@ -1,14 +1,23 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { listings } from "../store";
-  import type { IListingModel } from '../models/listing.model';
+    import type { IListingModel } from '../models/listing.model';
+    import listingService from '../services/listing.service';
+
+    function removeListing(listingId: number) {
+        listingService.removeListing(listingId);
+    }
     
-    function handleChangeTitle(listing: IListingModel ,ev: Event): void {
+    function handleChangeTitle(listing: IListingModel, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
         if (target.value.trim() === "") return;
 
         listings.updateListing(listing); // salvar o banco quando clicar em concluir
+    }
+    
+    function handleClickRemove(listingId: number): void {
+        removeListing(listingId);
     }
 </script>
 
@@ -16,24 +25,36 @@
     {#if $listings.length > 0}
         <div class="flex gap-2 justify-center lg:justify-start flex-col md:flex-row lg:max-w-[752px] max-w-[504px] mx-auto w-full mt-6">
             {#each $listings as listing (listing.id)}
-                <div class="w-full md:w-[238px] px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
-                    <input
-                        value={listing.title}
-                        on:change={(ev) => handleChangeTitle(listing, ev)}
-                        class="bg-systemDark text-systemWhite outline-none"
-                    >
+                <div class="flex flex-col w-full md:w-[238px] px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
+                    <div class="flex justify-between">
+                        <input
+                            value={listing.title}
+                            on:change={(ev) => handleChangeTitle(listing, ev)}
+                            class="bg-systemDark text-systemWhite outline-none"
+                        >
 
-                    <div class="flex flex-col gap-2 mt-3">
+                        <button on:click={() => handleClickRemove(listing.id)} class="px-1">
+                            <Icon icon="mdi:delete-outline" class="text-systemGray hover:text-red-700" width="25" height="25" />
+                        </button>
+                    </div>
+
+                    <div class="flex flex-col gap-3 mt-4">
                         {#each listing.tasks as task (task.description)}
                             <div class="flex items-center gap-2">
                                 <input
-                                    id="description"
                                     type="checkbox"
                                     class="w-[18px] h-[18px]"
                                 />
-                                <label for="description" class="text-systemWhiteLight text-sm">{task.description}</label>
+                                <input
+                                    value={task.description}
+                                    class="text-sm bg-systemDark text-systemWhite outline-none"
+                                />
                             </div>
                         {/each}
+                    </div>
+
+                    <div class={"self-end"}>
+                        <button on:click={() => {}} class={"pt-2 px-1 text-systemWhiteLight"}>atualizar</button>
                     </div>
                 </div>
             {/each}

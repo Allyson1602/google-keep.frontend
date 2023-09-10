@@ -5,7 +5,7 @@ export interface IListingService {
     listListingsByUserId: (userId: number) => IResponse<IListingModel[]>;
     addListing: (userId: number, listing: IListingView) => IResponse<IListingModel>;
     updateListing: (id: number, listing: IListingModel) => IResponse<IListingModel>;
-    deleteListing: (id: number) => IResponse<boolean>;
+    removeListing: (id: number) => IResponse<boolean>;
 }
 
 class ListingService extends ApiRestClient implements IListingService {
@@ -21,7 +21,7 @@ class ListingService extends ApiRestClient implements IListingService {
         return this.put(`/listing/${id}`, listing);
     };
 
-    deleteListing = (id: number): IResponse<boolean> => {
+    removeListing = (id: number): IResponse<boolean> => {
         return this.delete(`/listing`, id);
     };
 }
