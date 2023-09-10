@@ -1,15 +1,16 @@
 <script lang="ts">
-  import type { ITaskView } from "../models/task.model";
-  import taskService from "../services/task.service";
-  import { tasks } from "../store";
+    import type { AxiosResponse } from "axios";
+    import type { IListingModel, IListingView, ITask } from "../models/listing.model";
+    import listingService from "../services/listing.service";
+    import { listings } from "../store";
 
     let title = '';
-    let description = '';
+    let descriptions: ITask[] = [];
     let isFocused = false;
 
     function validate(): boolean {
         if (!title) return false;
-        if (!description) return false;
+        if (descriptions.length === 0) return false;
 
         return true;
     }
@@ -28,21 +29,25 @@
     function clean(): void {
         isFocused = false;
         title = '';
-        description = '';
+        descriptions = [];
     }
 
-    function addTask(): void {
+    function addListing(): void {
         if (!validate()) return;
 
-        const newTask: ITaskView = {
+        const newListing: IListingView = {
             title: title,
-            description: description,
-            done: false
+            tasks: [
+                // {
+                //     description: description,
+                //     done: false
+                // }
+            ]
         };
 
-        taskService.addTask(getUserId(), newTask).then((response) => {
+        listingService.addListing(getUserId(), newListing).then((response: AxiosResponse<IListingModel>) => {
             if (response.status === 201 && response.data) {
-                tasks.addTask(response.data);
+                listings.addListing(response.data);
             }
         });
 
@@ -51,7 +56,27 @@
     }
 
     function handleClickConcluded(): void {
-        addTask();
+        addListing();
+    }
+
+    function handleChangeTitle(ev: Event): void {
+        const target = ev.target as HTMLInputElement;
+
+        if (target.value.trim() === "") return;
+
+        title = title;
+    }
+
+    function handleChangeDescriptions(ev: Event): void {
+        const target = ev.target as HTMLInputElement;
+
+        if (target.value.trim() === "") return;
+
+        // const newTask: ITask = {
+        //     description: target.value,
+        //     done: false
+        // }
+        // descriptions = [...descriptions, newTask];
     }
 </script>
 
@@ -64,14 +89,16 @@
 >
     <div>
         <input
-            bind:value={title}
+            value={title}
+            on:change={handleChangeTitle}
             placeholder="Título"
             class={(isFocused ? "block " : "hidden ") + "w-full px-1 pb-3 text-base font-medium bg-systemDark text-systemWhite outline-none"}
         />
     
         <input
-            bind:value={description}
-            placeholder="Criar uma nota..."
+            value={descriptions}
+            on:change={handleChangeDescriptions}
+            placeholder="Criar um checklist..."
             class={(isFocused ? "py-3 " : "h-full ") + "w-full px-1 placeholder:font-medium bg-systemDark text-systemWhite outline-none"}
         />
     </div>

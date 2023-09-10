@@ -4,8 +4,8 @@
     import FieldChecklist from '../lib/components/FieldChecklist.svelte';
 </script>
 
-<main>
-    <header class="px-1">
+<main class="px-2 min-w-[250px]">
+    <header>
         <FieldChecklist />
     </header>
 
