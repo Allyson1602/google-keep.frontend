@@ -36,8 +36,6 @@
     }
 
     function addListing(): void {
-        console.log(newListing);
-
         listingService.addListing(getUserId(), newListing).then((response: AxiosResponse<IListing>) => {
             if (response.status === 201 && response.data) {
                 listings.addListing(response.data);
