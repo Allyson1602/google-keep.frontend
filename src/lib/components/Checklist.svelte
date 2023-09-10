@@ -170,7 +170,7 @@
                                     </div>
                                 {/each}
 
-                                {#if listing.tasks.some(taskItem => taskItem.done)}
+                                {#if listing.tasks.some(taskItem => taskItem.done) && listing.tasks.some(taskItem => !taskItem.done)}
                                     <div class="w-full h-[1px] my-3 bg-systemGray/40" />
                                 {/if}
 
