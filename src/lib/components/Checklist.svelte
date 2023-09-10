@@ -3,6 +3,10 @@
     import { listings } from "../store";
     import type { IListingModel, ITask } from '../models/listing.model';
     import listingService from '../services/listing.service';
+  import { tick } from 'svelte';
+
+    let newTask = "";
+    let isNewTask = false;
 
     function removeListing(listingId: number) {
         listingService.removeListing(listingId);
@@ -14,6 +18,24 @@
                 listings.updateListing(response.data);
             }
         });
+    }
+    
+    function handleClickNewTask(listing: IListingModel): void {
+        const createTask: ITask = {
+            id: new Date().getTime(),
+            description: "",
+            done: false
+        };
+
+        const newTaskListing: IListingModel = {
+            ...listing,
+            tasks: [...listing.tasks, createTask]
+        };
+
+        listings.updateListing(newTaskListing);
+        
+        tick();
+        isNewTask = true;
     }
     
     function handleChangeTitle(listing: IListingModel, ev: Event): void {
@@ -35,7 +57,7 @@
             ...listing,
             tasks: alterTasks
         }
-        
+
         listings.updateListing(alterListing);
     }
     
@@ -98,6 +120,12 @@
     function handleClickUpdate(listing: IListingModel): void {
         updateListing(listing);
     }
+
+    function update(ev: HTMLInputElement) {
+        if (isNewTask) ev.focus();
+
+        isNewTask = false;
+    }
 </script>
 
 <div class="max-w-[1248px] mx-auto">
@@ -129,6 +157,7 @@
                                             class="w-4 h-4"
                                         />
                                         <input
+                                            use:update
                                             value={task.description}
                                             on:change={(ev) => handleChangeDescription(task, listing, ev)}
                                             class="text-sm bg-systemDark text-systemWhite outline-none"
@@ -140,6 +169,13 @@
                                     </button>
                                 </div>
                             {/each}
+
+                            <div>
+                                <button on:click={(ev) => handleClickNewTask(listing)} class="flex items-center gap-2 text-sm bg-systemDark text-systemWhite">
+                                    <Icon icon="ic:baseline-add" class="w-4 h-4 text-systemWhite" />
+                                    <p>Novo item da lista</p>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
