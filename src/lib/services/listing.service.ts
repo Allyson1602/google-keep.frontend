@@ -4,7 +4,7 @@ import type { IListingModel, IListingView } from "../models/listing.model";
 export interface IListingService {
     listListingsByUserId: (userId: number) => IResponse<IListingModel[]>;
     addListing: (userId: number, listing: IListingView) => IResponse<IListingModel>;
-    updateListing: (id: number, listing: IListingModel) => IResponse<IListingModel>;
+    updateListing: (listing: IListingModel) => IResponse<IListingModel>;
     removeListing: (id: number) => IResponse<boolean>;
 }
 
@@ -17,8 +17,8 @@ class ListingService extends ApiRestClient implements IListingService {
         return this.post(`/listing/user/${userId}`, listing);
     };
 
-    updateListing = (id: number, listing: IListingModel): IResponse<IListingModel> => {
-        return this.put(`/listing/${id}`, listing);
+    updateListing = (listing: IListingModel): IResponse<IListingModel> => {
+        return this.put(`/listing/${listing.id}`, listing);
     };
 
     removeListing = (id: number): IResponse<boolean> => {

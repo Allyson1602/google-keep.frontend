@@ -8,16 +8,32 @@
         listingService.removeListing(listingId);
     }
     
+    function updateListing(listing: IListingModel) {
+        listingService.updateListing(listing).then((response) => {
+            if (response.status === 200 && response.data) {
+                listings.updateListing(response.data);
+            }
+        });
+    }
+    
     function handleChangeTitle(listing: IListingModel, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
         if (target.value.trim() === "") return;
 
-        listings.updateListing(listing); // salvar o banco quando clicar em concluir
+        const newTitleListing: IListingModel = {
+            ...listing,
+            title: target.value
+        }
+        listings.updateListing(newTitleListing);
     }
     
     function handleClickRemove(listingId: number): void {
         removeListing(listingId);
+    }
+    
+    function handleClickUpdate(listing: IListingModel): void {
+        updateListing(listing);
     }
 </script>
 
@@ -54,7 +70,7 @@
                     </div>
 
                     <div class={"self-end"}>
-                        <button on:click={() => {}} class={"pt-2 px-1 text-systemWhiteLight"}>atualizar</button>
+                        <button on:click={() => handleClickUpdate(listing)} class={"pt-2 px-1 text-systemWhiteLight"}>atualizar</button>
                     </div>
                 </div>
             {/each}
