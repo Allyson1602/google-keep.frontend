@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { listings } from "../store";
-    import type { IListingModel, ITask } from '../models/listing.model';
+    import type { IListing, ITask } from '../models/listing.model';
     import listingService from '../services/listing.service';
     import { tick } from 'svelte';
 
@@ -11,7 +11,7 @@
         listingService.removeListing(listingId);
     }
     
-    function updateListing(listing: IListingModel) {
+    function updateListing(listing: IListing) {
         listingService.updateListing(listing).then((response) => {
             if (response.status === 200 && response.data) {
                 listings.updateListing(response.data);
@@ -19,14 +19,14 @@
         });
     }
     
-    function handleClickNewTask(listing: IListingModel): void {
+    function handleClickNewTask(listing: IListing): void {
         const createTask: ITask = {
             id: new Date().getTime(),
             description: "",
             done: false
         };
 
-        const newTaskListing: IListingModel = {
+        const newTaskListing: IListing = {
             ...listing,
             tasks: [...listing.tasks, createTask]
         };
@@ -37,22 +37,22 @@
         isNewTask = true;
     }
     
-    function handleChangeTitle(listing: IListingModel, ev: Event): void {
+    function handleChangeTitle(listing: IListing, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
         if (target.value.trim() === "") return;
 
-        const newTitleListing: IListingModel = {
+        const newTitleListing: IListing = {
             ...listing,
             title: target.value
         }
         listings.updateListing(newTitleListing);
     }
     
-    function handleClickRemoveTask(taskId: number, listing: IListingModel): void {
+    function handleClickRemoveTask(taskId: number, listing: IListing): void {
         const alterTasks: ITask[] = listing.tasks.filter(taskItem => taskItem.id !== taskId);
 
-        const alterListing: IListingModel = {
+        const alterListing: IListing = {
             ...listing,
             tasks: alterTasks
         }
@@ -60,7 +60,7 @@
         listings.updateListing(alterListing);
     }
     
-    function handleChangeDescription(task: ITask, listing: IListingModel, ev: Event): void {
+    function handleChangeDescription(task: ITask, listing: IListing, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
         if (target.value.trim() === "") return;
@@ -82,7 +82,7 @@
             return taskItem;
         });
 
-        const alterListing: IListingModel = {
+        const alterListing: IListing = {
             ...listing,
             tasks: [...alterTaskListing]
         }
@@ -90,7 +90,7 @@
         listings.updateListing(alterListing);
     }
     
-    function handleChangeDone(task: ITask, listing: IListingModel): void {
+    function handleChangeDone(task: ITask, listing: IListing): void {
         task = {
             ...task,
             done: !task.done
@@ -104,7 +104,7 @@
             return taskItem;
         });
 
-        const alterListing: IListingModel = {
+        const alterListing: IListing = {
             ...listing,
             tasks: [...alterTaskListing]
         }
@@ -116,7 +116,7 @@
         removeListing(listingId);
     }
     
-    function handleClickUpdate(listing: IListingModel): void {
+    function handleClickUpdate(listing: IListing): void {
         updateListing(listing);
     }
 
@@ -129,7 +129,7 @@
 
 <div class="max-w-[1248px] mx-auto">
     {#if $listings.length > 0}
-        <div class="flex gap-2 justify-center lg:justify-start flex-col md:flex-row lg:max-w-[752px] max-w-[504px] mx-auto w-full mt-6">
+        <div class="flex gap-2 flex-wrap justify-center lg:justify-start flex-col md:flex-row lg:max-w-[752px] max-w-[504px] mx-auto w-full mt-6">
             {#each $listings as listing (listing.id)}
                 <div class="flex flex-col justify-between gap-3 w-full md:w-[238px] px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
                     <div>
@@ -198,7 +198,7 @@
                             </div>
 
                             <div>
-                                <button on:click={(ev) => handleClickNewTask(listing)} class="flex items-center gap-2 text-sm bg-systemDark text-systemWhite">
+                                <button on:click={() => handleClickNewTask(listing)} class="flex items-center gap-2 text-sm bg-systemDark text-systemWhite">
                                     <Icon icon="ic:baseline-add" class="w-4 h-4 text-systemWhite" />
                                     <p>Novo item da lista</p>
                                 </button>
@@ -207,7 +207,7 @@
                     </div>
 
                     <div class={"self-end"}>
-                        <button on:click={() => handleClickUpdate(listing)} class={"pt-2 px-1 text-systemWhiteLight"}>atualizar</button>
+                        <button on:click={() => handleClickUpdate(listing)} class={"pt-2 px-1 text-systemWhiteLight hover:text-systemWhite"}>atualizar</button>
                     </div>
                 </div>
             {/each}

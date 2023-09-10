@@ -10,9 +10,7 @@
     </header>
 
     <div>
-        <!-- {#each [] as {}} -->
-            <Checklist />
-        <!-- {/each} -->
+        <Checklist />
     </div>
 </main>
   

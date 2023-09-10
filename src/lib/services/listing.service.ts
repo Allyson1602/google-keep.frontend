@@ -1,23 +1,23 @@
 import ApiRestClient, { type IResponse } from "../axios.config";
-import type { IListingModel, IListingView } from "../models/listing.model";
+import type { IListing } from "../models/listing.model";
 
 export interface IListingService {
-    listListingsByUserId: (userId: number) => IResponse<IListingModel[]>;
-    addListing: (userId: number, listing: IListingView) => IResponse<IListingModel>;
-    updateListing: (listing: IListingModel) => IResponse<IListingModel>;
+    listListingsByUserId: (userId: number) => IResponse<IListing[]>;
+    addListing: (userId: number, listing: IListing) => IResponse<IListing>;
+    updateListing: (listing: IListing) => IResponse<IListing>;
     removeListing: (id: number) => IResponse<boolean>;
 }
 
 class ListingService extends ApiRestClient implements IListingService {
-    listListingsByUserId = (userId: number): IResponse<IListingModel[]> => {
+    listListingsByUserId = (userId: number): IResponse<IListing[]> => {
         return this.get(`/listing/user/${userId}`);
     };
     
-    addListing = (userId: number, listing: IListingView): IResponse<IListingModel> => {
+    addListing = (userId: number, listing: IListing): IResponse<IListing> => {
         return this.post(`/listing/user/${userId}`, listing);
     };
 
-    updateListing = (listing: IListingModel): IResponse<IListingModel> => {
+    updateListing = (listing: IListing): IResponse<IListing> => {
         return this.put(`/listing/${listing.id}`, listing);
     };
 
