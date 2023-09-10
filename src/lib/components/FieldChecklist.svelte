@@ -1,7 +1,8 @@
 <script lang="ts">
-  import type { ITaskView } from "../models/task.model";
-  import taskService from "../services/task.service";
-  import { tasks } from "../store";
+    import type { AxiosResponse } from "axios";
+    import type { ITaskModel, ITaskView } from "../models/task.model";
+    import taskService from "../services/task.service";
+    import { tasks } from "../store";
 
     let title = '';
     let description = '';
@@ -40,7 +41,7 @@
             done: false
         };
 
-        taskService.addTask(getUserId(), newTask).then((response) => {
+        taskService.addTask(getUserId(), newTask).then((response: AxiosResponse<ITaskModel>) => {
             if (response.status === 201 && response.data) {
                 tasks.addTask(response.data);
             }
