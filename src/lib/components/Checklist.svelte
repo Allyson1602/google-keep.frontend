@@ -28,6 +28,17 @@
         listings.updateListing(newTitleListing);
     }
     
+    function handleClickRemoveTask(taskId: number, listing: IListingModel): void {
+        const alterTasks: ITask[] = listing.tasks.filter(taskItem => taskItem.id !== taskId);
+
+        const alterListing: IListingModel = {
+            ...listing,
+            tasks: alterTasks
+        }
+        
+        listings.updateListing(alterListing);
+    }
+    
     function handleChangeDescription(task: ITask, listing: IListingModel, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
@@ -80,7 +91,7 @@
         listings.updateListing(alterListing);
     }
     
-    function handleClickRemove(listingId: number): void {
+    function handleClickRemoveListing(listingId: number): void {
         removeListing(listingId);
     }
     
@@ -93,35 +104,43 @@
     {#if $listings.length > 0}
         <div class="flex gap-2 justify-center lg:justify-start flex-col md:flex-row lg:max-w-[752px] max-w-[504px] mx-auto w-full mt-6">
             {#each $listings as listing (listing.id)}
-                <div class="flex flex-col w-full md:w-[238px] px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
-                    <div class="flex justify-between">
-                        <input
-                            value={listing.title}
-                            on:change={(ev) => handleChangeTitle(listing, ev)}
-                            class="bg-systemDark text-systemWhite outline-none"
-                        >
-
-                        <button on:click={() => handleClickRemove(listing.id)} class="px-1">
-                            <Icon icon="mdi:delete-outline" class="text-systemGray hover:text-red-700" width="25" height="25" />
-                        </button>
-                    </div>
-
-                    <div class="flex flex-col gap-3 mt-4">
-                        {#each listing.tasks as task (task.description)}
-                            <div class="flex items-center gap-2">
-                                <input
-                                    checked={task.done}
-                                    on:change={() => handleChangeDone(task, listing)}
-                                    type="checkbox"
-                                    class="w-[18px] h-[18px]"
-                                />
-                                <input
-                                    value={task.description}
-                                    on:change={(ev) => handleChangeDescription(task, listing, ev)}
-                                    class="text-sm bg-systemDark text-systemWhite outline-none"
-                                />
-                            </div>
-                        {/each}
+                <div class="flex flex-col justify-between w-full md:w-[238px] px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
+                    <div>
+                        <div class="flex justify-between">
+                            <input
+                                value={listing.title}
+                                on:change={(ev) => handleChangeTitle(listing, ev)}
+                                class="bg-systemDark text-systemWhite outline-none"
+                            >
+    
+                            <button on:click={() => handleClickRemoveListing(listing.id)} class="px-1">
+                                <Icon icon="mdi:delete-outline" class="text-systemGray hover:text-red-700" width="25" height="25" />
+                            </button>
+                        </div>
+    
+                        <div class="flex flex-col gap-3 mt-4">
+                            {#each listing.tasks as task (task.id)}
+                                <div class="flex justify-between group">
+                                    <div class="flex items-center gap-2">
+                                        <input
+                                            checked={task.done}
+                                            on:change={() => handleChangeDone(task, listing)}
+                                            type="checkbox"
+                                            class="w-4 h-4"
+                                        />
+                                        <input
+                                            value={task.description}
+                                            on:change={(ev) => handleChangeDescription(task, listing, ev)}
+                                            class="text-sm bg-systemDark text-systemWhite outline-none"
+                                        />
+                                    </div>
+                                    
+                                    <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
+                                        <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                                    </button>
+                                </div>
+                            {/each}
+                        </div>
                     </div>
 
                     <div class={"self-end"}>
