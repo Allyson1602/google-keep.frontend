@@ -1,5 +1,5 @@
 import ApiRestClient, { type IResponse } from "../axios.config";
-import type { ITaskModel, ITaskView } from "../models/task";
+import type { ITaskModel, ITaskView } from "../models/task.model";
 
 export interface ITaskService {
     listTasksByUserId: (userId: number) => IResponse<ITaskModel[]>;

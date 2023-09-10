@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type { ITaskView } from "../models/task";
+  import type { ITaskView } from "../models/task.model";
+  import taskService from "../services/task.service";
   import { tasks } from "../store";
 
     let title = '';
@@ -7,24 +8,50 @@
     let isFocused = false;
 
     function validate(): boolean {
+        if (!title) return false;
+        if (!description) return false;
+
         return true;
     }
 
-    function handleClickConcluded(): void {
-        if (validate()) {
-            isFocused = false;
+    function getUserId(): number {
+        let userId = localStorage.getItem("userid");
 
-            // criar requisição para adicionar task no bd
-            const newTask: ITaskView = {
-                title: title,
-                description: description,
-                done: false
-            };
-            // tasks.addTask(newTask);
-
-            title = '';
-            description = '';
+        if (!userId) {
+            localStorage.setItem("userid", crypto.randomUUID());
+            userId = localStorage.getItem("userid");
         }
+
+        return parseInt(userId!);
+    }
+    
+    function clean(): void {
+        isFocused = false;
+        title = '';
+        description = '';
+    }
+
+    function addTask(): void {
+        if (!validate()) return;
+
+        const newTask: ITaskView = {
+            title: title,
+            description: description,
+            done: false
+        };
+
+        taskService.addTask(getUserId(), newTask).then((response) => {
+            if (response.status === 201 && response.data) {
+                tasks.addTask(response.data);
+            }
+        });
+
+        clean();
+        return;
+    }
+
+    function handleClickConcluded(): void {
+        addTask();
     }
 </script>
 

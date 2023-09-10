@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { ITaskModel } from './models/task';
+import type { ITaskModel } from './models/task.model';
 
 function createTasks() {
 	const { subscribe, update } = writable<ITaskModel[]>([]);
