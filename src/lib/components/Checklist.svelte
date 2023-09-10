@@ -3,9 +3,8 @@
     import { listings } from "../store";
     import type { IListingModel, ITask } from '../models/listing.model';
     import listingService from '../services/listing.service';
-  import { tick } from 'svelte';
+    import { tick } from 'svelte';
 
-    let newTask = "";
     let isNewTask = false;
 
     function removeListing(listingId: number) {
@@ -132,7 +131,7 @@
     {#if $listings.length > 0}
         <div class="flex gap-2 justify-center lg:justify-start flex-col md:flex-row lg:max-w-[752px] max-w-[504px] mx-auto w-full mt-6">
             {#each $listings as listing (listing.id)}
-                <div class="flex flex-col justify-between w-full md:w-[238px] px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
+                <div class="flex flex-col justify-between gap-3 w-full md:w-[238px] px-4 py-3 mt-2 rounded-lg bg-systemDark border border-systemGray">
                     <div>
                         <div class="flex justify-between">
                             <input
@@ -147,28 +146,56 @@
                         </div>
     
                         <div class="flex flex-col gap-3 mt-4">
-                            {#each listing.tasks as task (task.id)}
-                                <div class="flex justify-between group">
-                                    <div class="flex items-center gap-2">
-                                        <input
-                                            checked={task.done}
-                                            on:change={() => handleChangeDone(task, listing)}
-                                            type="checkbox"
-                                            class="w-4 h-4"
-                                        />
-                                        <input
-                                            use:update
-                                            value={task.description}
-                                            on:change={(ev) => handleChangeDescription(task, listing, ev)}
-                                            class="text-sm bg-systemDark text-systemWhite outline-none"
-                                        />
+                            <div>
+                                {#each listing.tasks.filter(taskItem => !taskItem.done) as task (task.id)}
+                                    <div class="flex justify-between first:mt-0 mt-2 group">
+                                        <div class="flex items-center gap-2">
+                                            <input
+                                                checked={task.done}
+                                                on:change={() => handleChangeDone(task, listing)}
+                                                type="checkbox"
+                                                class="w-4 h-4"
+                                            />
+                                            <input
+                                                use:update
+                                                value={task.description}
+                                                on:change={(ev) => handleChangeDescription(task, listing, ev)}
+                                                class="text-sm bg-systemDark text-systemWhite outline-none"
+                                            />
+                                        </div>
+                                        
+                                        <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
+                                            <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                                        </button>
                                     </div>
-                                    
-                                    <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
-                                        <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
-                                    </button>
-                                </div>
-                            {/each}
+                                {/each}
+
+                                {#if listing.tasks.some(taskItem => taskItem.done)}
+                                    <div class="w-full h-[1px] my-3 bg-systemGray/40" />
+                                {/if}
+
+                                {#each listing.tasks.filter(taskItem => taskItem.done) as task (task.id)}
+                                    <div class="flex justify-between first:mt-0 mt-2 group">
+                                        <div class="flex items-center gap-2">
+                                            <input
+                                                checked={task.done}
+                                                on:change={() => handleChangeDone(task, listing)}
+                                                type="checkbox"
+                                                class="w-4 h-4"
+                                            />
+                                            <input
+                                                value={task.description}
+                                                on:change={(ev) => handleChangeDescription(task, listing, ev)}
+                                                class="text-sm bg-systemDark text-systemWhite outline-none"
+                                            />
+                                        </div>
+                                        
+                                        <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
+                                            <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                                        </button>
+                                    </div>
+                                {/each}
+                            </div>
 
                             <div>
                                 <button on:click={(ev) => handleClickNewTask(listing)} class="flex items-center gap-2 text-sm bg-systemDark text-systemWhite">
