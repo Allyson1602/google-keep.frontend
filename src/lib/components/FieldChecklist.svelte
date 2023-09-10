@@ -1,16 +1,16 @@
 <script lang="ts">
     import type { AxiosResponse } from "axios";
-    import type { IListingModel, IListingView } from "../models/listing.model";
+    import type { IListingModel, IListingView, ITask } from "../models/listing.model";
     import listingService from "../services/listing.service";
     import { listings } from "../store";
 
     let title = '';
-    let description = '';
+    let descriptions: ITask[] = [];
     let isFocused = false;
 
     function validate(): boolean {
         if (!title) return false;
-        if (!description) return false;
+        if (descriptions.length === 0) return false;
 
         return true;
     }
@@ -29,7 +29,7 @@
     function clean(): void {
         isFocused = false;
         title = '';
-        description = '';
+        descriptions = [];
     }
 
     function addListing(): void {
@@ -38,10 +38,10 @@
         const newListing: IListingView = {
             title: title,
             tasks: [
-                {
-                    description: description,
-                    done: false
-                }
+                // {
+                //     description: description,
+                //     done: false
+                // }
             ]
         };
 
@@ -58,6 +58,26 @@
     function handleClickConcluded(): void {
         addListing();
     }
+
+    function handleChangeTitle(ev: Event): void {
+        const target = ev.target as HTMLInputElement;
+
+        if (target.value.trim() === "") return;
+
+        title = title;
+    }
+
+    function handleChangeDescriptions(ev: Event): void {
+        const target = ev.target as HTMLInputElement;
+
+        if (target.value.trim() === "") return;
+
+        // const newTask: ITask = {
+        //     description: target.value,
+        //     done: false
+        // }
+        // descriptions = [...descriptions, newTask];
+    }
 </script>
 
 <div
@@ -69,14 +89,16 @@
 >
     <div>
         <input
-            bind:value={title}
+            value={title}
+            on:change={handleChangeTitle}
             placeholder="Título"
             class={(isFocused ? "block " : "hidden ") + "w-full px-1 pb-3 text-base font-medium bg-systemDark text-systemWhite outline-none"}
         />
     
         <input
-            bind:value={description}
-            placeholder="Criar uma nota..."
+            value={descriptions}
+            on:change={handleChangeDescriptions}
+            placeholder="Criar um checklist..."
             class={(isFocused ? "py-3 " : "h-full ") + "w-full px-1 placeholder:font-medium bg-systemDark text-systemWhite outline-none"}
         />
     </div>
