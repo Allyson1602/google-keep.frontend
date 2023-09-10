@@ -63,21 +63,21 @@
         }
     }
     
-    function handleClickRemoveTask(taskId: number, listing: IListing): void {
-        const alterTasks: ITask[] = listing.tasks.filter(taskItem => taskItem.id !== taskId);
+    function handleClickRemoveTask(taskId: number): void {
+        const alterTasks: ITask[] = newListing.tasks.filter(taskItem => taskItem.id !== taskId);
 
         newListing = {
-            ...listing,
+            ...newListing,
             tasks: alterTasks
         };
     }
     
-    function handleChangeDescription(task: ITask, listing: IListing, ev: Event): void {
+    function handleChangeDescription(task: ITask, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
         if (target.value.trim() === "") return;
 
-        const hasTask = listing.tasks.some(taskItem => taskItem.description === target.value);
+        const hasTask = newListing.tasks.some(taskItem => taskItem.description === target.value);
 
         if (hasTask) return;
 
@@ -86,7 +86,7 @@
             description: target.value
         };
 
-        const alterTaskListing = listing.tasks.map(taskItem => {
+        const alterTaskListing = newListing.tasks.map(taskItem => {
             if (taskItem.id === task.id) {
                 return task;
             }
@@ -95,12 +95,12 @@
         });
 
         newListing = {
-            ...listing,
+            ...newListing,
             tasks: [...alterTaskListing]
         };
     }
     
-    function handleClickNewTask(listing: IListing): void {
+    function handleClickNewTask(): void {
         const createTask: ITask = {
             id: new Date().getTime(),
             description: "",
@@ -108,12 +108,32 @@
         };
 
         newListing = {
-            ...listing,
-            tasks: [...listing.tasks, createTask]
+            ...newListing,
+            tasks: [...newListing.tasks, createTask]
         };
         
         tick();
         isNewTask = true;
+    }
+    
+    function handleChangeDone(task: ITask): void {
+        task = {
+            ...task,
+            done: !task.done
+        };
+
+        const alterTaskListing = newListing.tasks.map(taskItem => {
+            if (taskItem.id === task.id) {
+                return task;
+            }
+
+            return taskItem;
+        });
+
+        newListing = {
+            ...newListing,
+            tasks: [...alterTaskListing]
+        }
     }
 
     function update(ev: HTMLInputElement) {
@@ -140,23 +160,59 @@
     </div>
 
     <div class="flex flex-col gap-3 mt-4">
-        {#each newListing.tasks as task (task.id)}
-            <div class="flex justify-between first:mt-0 mt-2 group">
-                <input
-                    use:update
-                    value={task.description}
-                    on:change={(ev) => handleChangeDescription(task, newListing, ev)}
-                    class="text-sm bg-systemDark text-systemWhite outline-none"
-                />
-                
-                <button on:click={() => handleClickRemoveTask(task.id, newListing)} class="px-1 group-hover:block hidden">
-                    <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
-                </button>
-            </div>
-        {/each}
+        <div>
+            {#each newListing.tasks.filter(taskItem => !taskItem.done) as task (task.id)}
+                <div class="flex justify-between first:mt-0 mt-2 group">
+                    <div class="flex items-center gap-2">
+                        <input
+                            checked={task.done}
+                            on:change={() => handleChangeDone(task)}
+                            type="checkbox"
+                            class="w-4 h-4"
+                        />
+                        <input
+                            use:update
+                            value={task.description}
+                            on:change={(ev) => handleChangeDescription(task, ev)}
+                            class="text-sm bg-systemDark text-systemWhite outline-none"
+                        />
+                    </div>
+                    
+                    <button on:click={() => handleClickRemoveTask(task.id)} class="px-1 group-hover:block hidden">
+                        <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                    </button>
+                </div>
+            {/each}
+    
+            {#if newListing.tasks.some(taskItem => taskItem.done) && newListing.tasks.some(taskItem => !taskItem.done)}
+                <div class="w-full h-[1px] my-3 bg-systemGray/40" />
+            {/if}
+    
+            {#each newListing.tasks.filter(taskItem => taskItem.done) as task (task.id)}
+                <div class="flex justify-between first:mt-0 mt-2 group">
+                    <div class="flex items-center gap-2">
+                        <input
+                            checked={task.done}
+                            on:change={() => handleChangeDone(task)}
+                            type="checkbox"
+                            class="w-4 h-4"
+                        />
+                        <input
+                            value={task.description}
+                            on:change={(ev) => handleChangeDescription(task, ev)}
+                            class="text-sm bg-systemDark text-systemWhite outline-none"
+                        />
+                    </div>
+                    
+                    <button on:click={() => handleClickRemoveTask(task.id)} class="px-1 group-hover:block hidden">
+                        <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                    </button>
+                </div>
+            {/each}
+        </div>
 
         {#if isFocused}
-            <button on:click={(ev) => handleClickNewTask(newListing)} class="flex items-center gap-2 text-sm bg-systemDark text-systemWhite">
+            <button on:click={handleClickNewTask} class="flex items-center gap-2 text-sm bg-systemDark text-systemWhite">
                 <Icon icon="ic:baseline-add" class="w-4 h-4 text-systemWhite" />
                 <p>Novo item da lista</p>
             </button>
