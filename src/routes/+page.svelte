@@ -1,23 +1,23 @@
 <script lang="ts">
     import '../app.css';
-    import FieldChecklist from '../components/FieldChecklist.svelte';
-    import Checklist from '../components/Checklist.svelte';
+    import Checklist from '../lib/components/Checklist.svelte';
+    import FieldChecklist from '../lib/components/FieldChecklist.svelte';
 </script>
 
 <main>
-    <header>
+    <header class="px-1">
         <FieldChecklist />
     </header>
 
     <div>
-        {#each [] as {}}
+        <!-- {#each [] as {}} -->
             <Checklist />
-        {/each}
+        <!-- {/each} -->
     </div>
 </main>
   
 <style lang="postcss">
     :global(html) {
-        background-color: theme(backgroundColor);
+        background-color: theme(colors.systemDark);
     }
 </style>
