@@ -13,7 +13,7 @@ function createListings() {
                 },
                 {
                     description: 'Description 3',
-                    done: false
+                    done: true
                 },
                 {
                     description: 'Description 4',
@@ -27,7 +27,7 @@ function createListings() {
             tasks: [
                 {
                     description: 'Description 2',
-                    done: false
+                    done: true
                 }
             ]
         }

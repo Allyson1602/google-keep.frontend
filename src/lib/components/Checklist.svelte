@@ -1,7 +1,7 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { listings } from "../store";
-    import type { IListingModel } from '../models/listing.model';
+    import type { IListingModel, ITask } from '../models/listing.model';
     import listingService from '../services/listing.service';
 
     function removeListing(listingId: number) {
@@ -26,6 +26,58 @@
             title: target.value
         }
         listings.updateListing(newTitleListing);
+    }
+    
+    function handleChangeDescription(task: ITask, listing: IListingModel, ev: Event): void {
+        const target = ev.target as HTMLInputElement;
+
+        if (target.value.trim() === "") return;
+
+        const hasTask = listing.tasks.some(taskItem => taskItem.description === target.value);
+
+        if (hasTask) return;
+
+        task = {
+            ...task,
+            description: target.value
+        };
+
+        const alterTaskListing = listing.tasks.map(taskItem => {
+            if (taskItem.description === task.description) {
+                return task;
+            }
+
+            return taskItem;
+        });
+
+        const alterListing: IListingModel = {
+            ...listing,
+            tasks: [...alterTaskListing]
+        }
+
+        listings.updateListing(alterListing);
+    }
+    
+    function handleChangeDone(task: ITask, listing: IListingModel): void {
+        task = {
+            ...task,
+            done: !task.done
+        };
+
+        const alterTaskListing = listing.tasks.map(taskItem => {
+            if (taskItem.description === task.description) {
+                return task;
+            }
+
+            return taskItem;
+        });
+
+        const alterListing: IListingModel = {
+            ...listing,
+            tasks: [...alterTaskListing]
+        }
+
+        listings.updateListing(alterListing);
     }
     
     function handleClickRemove(listingId: number): void {
@@ -58,11 +110,14 @@
                         {#each listing.tasks as task (task.description)}
                             <div class="flex items-center gap-2">
                                 <input
+                                    checked={task.done}
+                                    on:change={() => handleChangeDone(task, listing)}
                                     type="checkbox"
                                     class="w-[18px] h-[18px]"
                                 />
                                 <input
                                     value={task.description}
+                                    on:change={(ev) => handleChangeDescription(task, listing, ev)}
                                     class="text-sm bg-systemDark text-systemWhite outline-none"
                                 />
                             </div>
