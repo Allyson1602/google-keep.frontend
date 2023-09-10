@@ -6,6 +6,7 @@
     import { tick } from 'svelte';
 
     let isNewTask = false;
+    let updatedListings: number[] = [];
 
     function removeListing(listingId: number) {
         listingService.removeListing(listingId);
@@ -15,6 +16,7 @@
         listingService.updateListing(listing).then((response) => {
             if (response.status === 200 && response.data) {
                 listings.updateListing(response.data);
+                updatedListings = updatedListings.filter(updatedListingItem => updatedListingItem !== listing.id);
             }
         });
     }
@@ -35,6 +37,7 @@
         
         tick();
         isNewTask = true;
+        updatedListings = [...updatedListings, listing.id];
     }
     
     function handleChangeTitle(listing: IListing, ev: Event): void {
@@ -47,6 +50,7 @@
             title: target.value
         }
         listings.updateListing(newTitleListing);
+        updatedListings = [...updatedListings, listing.id];
     }
     
     function handleClickRemoveTask(taskId: number, listing: IListing): void {
@@ -58,6 +62,7 @@
         }
 
         listings.updateListing(alterListing);
+        updatedListings = [...updatedListings, listing.id];
     }
     
     function handleChangeDescription(task: ITask, listing: IListing, ev: Event): void {
@@ -88,6 +93,7 @@
         }
 
         listings.updateListing(alterListing);
+        updatedListings = [...updatedListings, listing.id];
     }
     
     function handleChangeDone(task: ITask, listing: IListing): void {
@@ -110,6 +116,7 @@
         }
 
         listings.updateListing(alterListing);
+        updatedListings = [...updatedListings, listing.id];
     }
     
     function handleClickRemoveListing(listingId: number): void {
@@ -207,7 +214,9 @@
                     </div>
 
                     <div class={"self-end"}>
-                        <button on:click={() => handleClickUpdate(listing)} class={"pt-2 px-1 text-systemWhiteLight hover:text-systemWhite"}>atualizar</button>
+                        {#if updatedListings.some(updatedListingItem => updatedListingItem === listing.id)}
+                            <button on:click={() => handleClickUpdate(listing)} class={"pt-2 px-1 text-systemWhiteLight hover:text-systemWhite"}>atualizar</button>
+                        {/if}
                     </div>
                 </div>
             {/each}
