@@ -7,7 +7,7 @@ const initializeAxios = (config: AxiosRequestConfig): AxiosInstance => {
 };
 
 const initialConfig: AxiosRequestConfig = {
-    baseURL: 'http://localhost:3006',
+    baseURL: 'http://localhost:3000',
     responseType: 'json',
     headers: {
         'Content-Type': 'application/json; charset=utf-8',
@@ -23,6 +23,8 @@ export interface IApiRestClient {
 
     put: <T>(url: string, body: object, queryParams?: object) => IResponse<T>;
 
+    patch: <T>(url: string, body: object, queryParams?: object) => IResponse<T>;
+
     delete: <T>(url: string, id:number) => IResponse<T>;
 }
 
@@ -37,6 +39,10 @@ class ApiRestClient implements IApiRestClient {
 
     put = <T>(url: string, body: object, queryParams?: object): IResponse<T> => {
         return axiosInstance.put<T>(url, body, { params: queryParams });
+    }
+
+    patch = <T>(url: string, body: object, queryParams?: object): IResponse<T> => {
+        return axiosInstance.patch<T>(url, body, { params: queryParams });
     }
 
     delete = <T>(url: string, id: number): IResponse<T> => {
