@@ -9,7 +9,11 @@
     let updatedListings: number[] = [];
 
     function removeListing(listingId: number) {
-        listingService.removeListing(listingId);
+        listingService.removeListing(listingId).then(({ data }) => {
+            if (data) {
+                listings.removeListing(listingId);
+            }
+        });
     }
     
     function updateListing(listing: IListing) {
