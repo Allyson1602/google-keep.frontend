@@ -154,54 +154,56 @@
     
                         <div class="flex flex-col gap-3 mt-4">
                             <div>
-                                {#each listing.tasks.filter(taskItem => !taskItem.done) as task (task.id)}
-                                    <div class="flex justify-between first:mt-0 mt-2 group">
-                                        <div class="flex items-center gap-2">
-                                            <input
-                                                checked={task.done}
-                                                on:change={() => handleChangeDone(task, listing)}
-                                                type="checkbox"
-                                                class="w-4 h-4"
-                                            />
-                                            <input
-                                                use:update
-                                                value={task.description}
-                                                on:change={(ev) => handleChangeDescription(task, listing, ev)}
-                                                class="text-sm bg-systemDark text-systemWhite outline-none"
-                                            />
+                                {#if listing.tasks?.length > 0}
+                                    {#each listing.tasks.filter(taskItem => !taskItem.done) as task (task.id)}
+                                        <div class="flex justify-between first:mt-0 mt-2 group">
+                                            <div class="flex items-center gap-2">
+                                                <input
+                                                    checked={task.done}
+                                                    on:change={() => handleChangeDone(task, listing)}
+                                                    type="checkbox"
+                                                    class="w-4 h-4"
+                                                />
+                                                <input
+                                                    use:update
+                                                    value={task.description}
+                                                    on:change={(ev) => handleChangeDescription(task, listing, ev)}
+                                                    class="text-sm bg-systemDark text-systemWhite outline-none"
+                                                />
+                                            </div>
+                                            
+                                            <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
+                                                <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                                            </button>
                                         </div>
-                                        
-                                        <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
-                                            <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
-                                        </button>
-                                    </div>
-                                {/each}
+                                    {/each}
 
-                                {#if listing.tasks.some(taskItem => taskItem.done) && listing.tasks.some(taskItem => !taskItem.done)}
-                                    <div class="w-full h-[1px] my-3 bg-systemGray/40" />
+                                    {#if listing.tasks.some(taskItem => taskItem.done) && listing.tasks.some(taskItem => !taskItem.done)}
+                                        <div class="w-full h-[1px] my-3 bg-systemGray/40" />
+                                    {/if}
+    
+                                    {#each listing.tasks.filter(taskItem => taskItem.done) as task (task.id)}
+                                        <div class="flex justify-between first:mt-0 mt-2 group">
+                                            <div class="flex items-center gap-2">
+                                                <input
+                                                    checked={task.done}
+                                                    on:change={() => handleChangeDone(task, listing)}
+                                                    type="checkbox"
+                                                    class="w-4 h-4"
+                                                />
+                                                <input
+                                                    value={task.description}
+                                                    on:change={(ev) => handleChangeDescription(task, listing, ev)}
+                                                    class="text-sm bg-systemDark text-systemWhite outline-none"
+                                                />
+                                            </div>
+                                            
+                                            <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
+                                                <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                                            </button>
+                                        </div>
+                                    {/each}
                                 {/if}
-
-                                {#each listing.tasks.filter(taskItem => taskItem.done) as task (task.id)}
-                                    <div class="flex justify-between first:mt-0 mt-2 group">
-                                        <div class="flex items-center gap-2">
-                                            <input
-                                                checked={task.done}
-                                                on:change={() => handleChangeDone(task, listing)}
-                                                type="checkbox"
-                                                class="w-4 h-4"
-                                            />
-                                            <input
-                                                value={task.description}
-                                                on:change={(ev) => handleChangeDescription(task, listing, ev)}
-                                                class="text-sm bg-systemDark text-systemWhite outline-none"
-                                            />
-                                        </div>
-                                        
-                                        <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
-                                            <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
-                                        </button>
-                                    </div>
-                                {/each}
                             </div>
 
                             <div>
