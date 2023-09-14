@@ -1,5 +1,4 @@
 <script lang="ts">
-    import type { AxiosResponse } from "axios";
     import type { IListing, ITask } from "../models/listing.model";
     import listingService from "../services/listing.service";
     import { listings } from "../store";

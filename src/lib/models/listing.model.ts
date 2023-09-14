@@ -1,8 +1,4 @@
-export interface ITask {
-    id: number;
-    description: string;
-    done: boolean;
-}
+import type { ITask } from "./task.model";
 
 export interface IListing {
     id: number;
