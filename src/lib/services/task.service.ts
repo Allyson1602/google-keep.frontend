@@ -1,29 +1,29 @@
 import ApiRestClient, { type IResponse } from "../axios.config";
-import type { IListing } from "../models/listing.model";
+import type { ITask } from "../models/task.model";
 
-export interface IListingService {
-    listListings: () => IResponse<IListing[]>;
-    addListing: (listing: IListing) => IResponse<IListing>;
-    updateListing: (listing: IListing) => IResponse<IListing>;
-    removeListing: (id: number) => IResponse<boolean>;
+export interface ITaskService {
+    listTasks: () => IResponse<ITask[]>;
+    addTask: (task: ITask) => IResponse<ITask>;
+    updateTask: (task: ITask) => IResponse<ITask>;
+    removeTask: (id: number) => IResponse<boolean>;
 }
 
-class ListingService extends ApiRestClient implements IListingService {
-    listListings = (): IResponse<IListing[]> => {
-        return this.get("listings");
+class TaskService extends ApiRestClient implements ITaskService {
+    listTasks = (): IResponse<ITask[]> => {
+        return this.get("tasks");
     };
     
-    addListing = (listing: IListing): IResponse<IListing> => {
-        return this.post("listings", listing);
+    addTask = (task: ITask): IResponse<ITask> => {
+        return this.post("tasks", task);
     };
 
-    updateListing = (listing: IListing): IResponse<IListing> => {
-        return this.patch(`listings/${listing.id}`, listing);
+    updateTask = (task: ITask): IResponse<ITask> => {
+        return this.patch(`tasks/${task.id}`, task);
     };
 
-    removeListing = (id: number): IResponse<boolean> => {
-        return this.delete("listings", id);
+    removeTask = (id: number): IResponse<boolean> => {
+        return this.delete("tasks", id);
     };
 }
 
-export default new ListingService();
+export default new TaskService();
