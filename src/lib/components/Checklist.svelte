@@ -4,29 +4,31 @@
     import type { IListing } from '../models/listing.model';
     import listingService from '../services/listing.service';
     import { tick } from 'svelte';
-  import type { ITask } from '../models/task.model';
-  import taskService from '../services/task.service';
+    import type { ITask } from '../models/task.model';
+    import taskService from '../services/task.service';
 
     let isNewTask = false;
     let updatedListings: number[] = [];
 
-    function removeListing(listingId: number) {
+    function removeListing(listingId: number): void {
         listingService.removeListing(listingId).then(({ data }) => {
             if (data) {
                 listings.removeListing(listingId);
             }
         });
     }
-    
-    function handleClickNewTask(listing: IListing): void {
-        const createTask: ITask = {
-            id: new Date().getTime(),
-            listing_id: listing.id,
-            description: "",
-            done: false
-        };
 
-        taskService.addTask(createTask).then(({ data }) => {
+    function updateListing(listing: IListing): void {
+        listingService.updateListing(listing).then((response) => {
+            if (response.status === 200 && response.data) {
+                listings.updateListing(response.data);
+                updatedListings = [...updatedListings, listing.id];
+            }
+        });
+    }
+
+    function addTask(task: ITask, listing: IListing): void {
+        taskService.addTask(task).then(({ data }) => {
             if (data) {
                 const newTaskListing: IListing = {
                     ...listing,
@@ -41,6 +43,53 @@
             }
         });
     }
+
+    function updateTask(task: ITask, listing: IListing): void {
+        taskService.updateTask(task).then((response) => {
+            if (response.status === 200 && response.data) {
+                const alterTaskListing = listing.tasks.map(taskItem => {
+                    if (taskItem.id === task.id) {
+                        return task;
+                    }
+
+                    return taskItem;
+                });
+
+                const alterListing: IListing = {
+                    ...listing,
+                    tasks: [...alterTaskListing]
+                }
+
+                listings.updateListing(alterListing);
+                updatedListings = [...updatedListings, listing.id];
+            }
+        });
+    }
+
+    function removeTask(taskId: number, listing: IListing): void {
+        taskService.removeTask(taskId).then((response) => {
+            if (response.status === 200 && response.data) {
+                const alterListing: IListing = {
+                    ...listing,
+                    tasks: listing.tasks.filter(taskItem => taskItem.id !== taskId)
+                };
+
+                listings.updateListing(alterListing);
+                updatedListings = [...updatedListings, listing.id];
+            }
+        });
+    }
+    
+    function handleClickNewTask(listing: IListing): void {
+        const createTask: ITask = {
+            id: new Date().getTime(),
+            listing_id: listing.id,
+            description: "",
+            done: false
+        };
+
+        addTask(createTask, listing);
+    }
     
     function handleChangeTitle(listing: IListing, ev: Event): void {
         const target = ev.target as HTMLInputElement;
@@ -52,33 +101,15 @@
             title: target.value
         }
 
-        listingService.updateListing(newTitleListing).then((response) => {
-            if (response.status === 200 && response.data) {
-                listings.updateListing(response.data);
-                updatedListings = [...updatedListings, listing.id];
-            }
-        });
+        updateListing(newTitleListing);
     }
     
     function handleClickRemoveTask(taskId: number, listing: IListing): void {
-        const alterTasks: ITask[] = listing.tasks.filter(taskItem => taskItem.id !== taskId);
-
-        taskService.removeTask(taskId).then((response) => {
-            if (response.status === 200 && response.data) {
-                const alterListing: IListing = {
-                    ...listing,
-                    tasks: alterTasks
-                };
-
-                listings.updateListing(alterListing);
-                updatedListings = [...updatedListings, listing.id];
-            }
-        });
+        removeTask(taskId, listing);
     }
     
     function handleChangeDescription(task: ITask, listing: IListing, ev: Event): void {
         const target = ev.target as HTMLInputElement;
-        console.log(task);
 
         if (target.value.trim() === "") return;
 
@@ -91,25 +122,7 @@
             description: target.value
         };
 
-        taskService.updateTask(task).then((response) => {
-            if (response.status === 200 && response.data) {
-                const alterTaskListing = listing.tasks.map(taskItem => {
-                    if (taskItem.id === task.id) {
-                        return task;
-                    }
-
-                    return taskItem;
-                });
-
-                const alterListing: IListing = {
-                    ...listing,
-                    tasks: [...alterTaskListing]
-                }
-
-                listings.updateListing(alterListing);
-                updatedListings = [...updatedListings, listing.id];
-            }
-        });
+        updateTask(task, listing);
     }
     
     function handleChangeDone(task: ITask, listing: IListing): void {
@@ -118,25 +131,7 @@
             done: !task.done
         };
 
-        taskService.updateTask(task).then((response) => {
-            if (response.status === 200 && response.data) {
-                const alterTaskListing = listing.tasks.map(taskItem => {
-                    if (taskItem.id === task.id) {
-                        return task;
-                    }
-
-                    return taskItem;
-                });
-
-                const alterListing: IListing = {
-                    ...listing,
-                    tasks: [...alterTaskListing]
-                }
-
-                listings.updateListing(alterListing);
-                updatedListings = [...updatedListings, listing.id];
-            }
-        });
+        updateTask(task, listing);
     }
     
     function handleClickRemoveListing(listingId: number): void {
