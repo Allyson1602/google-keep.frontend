@@ -1,5 +1,6 @@
 <script lang="ts">
-    import type { IListing, ITask } from "../models/listing.model";
+    import type { IListing } from "../models/listing.model";
+  import type { ITask } from "../models/task.model";
     import listingService from "../services/listing.service";
     import { listings } from "../store";
     import Icon from "@iconify/svelte";

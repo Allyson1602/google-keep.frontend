@@ -1,9 +1,11 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { listings } from "../store";
-    import type { IListing, ITask } from '../models/listing.model';
+    import type { IListing } from '../models/listing.model';
     import listingService from '../services/listing.service';
     import { tick } from 'svelte';
+  import type { ITask } from '../models/task.model';
+  import taskService from '../services/task.service';
 
     let isNewTask = false;
     let updatedListings: number[] = [];
@@ -16,61 +18,67 @@
         });
     }
     
-    function updateListing(listing: IListing) {
-        listingService.updateListing(listing).then((response) => {
-            if (response.status === 200 && response.data) {
-                listings.updateListing(response.data);
-                updatedListings = updatedListings.filter(updatedListingItem => updatedListingItem !== listing.id);
-            }
-        });
-    }
-    
     function handleClickNewTask(listing: IListing): void {
         const createTask: ITask = {
             id: new Date().getTime(),
+            listing_id: listing.id,
             description: "",
             done: false
         };
 
-        const newTaskListing: IListing = {
-            ...listing,
-            tasks: [...listing.tasks, createTask]
-        };
+        taskService.addTask(createTask).then(({ data }) => {
+            if (data) {
+                const newTaskListing: IListing = {
+                    ...listing,
+                    tasks: [...listing.tasks, data]
+                };
 
-        listings.updateListing(newTaskListing);
-        
-        tick();
-        isNewTask = true;
-        updatedListings = [...updatedListings, listing.id];
+                listings.updateListing(newTaskListing);
+                updatedListings = [...updatedListings, listing.id];
+                
+                tick();
+                isNewTask = true;
+            }
+        });
     }
     
     function handleChangeTitle(listing: IListing, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
         if (target.value.trim() === "") return;
-
+        
         const newTitleListing: IListing = {
             ...listing,
             title: target.value
         }
-        listings.updateListing(newTitleListing);
-        updatedListings = [...updatedListings, listing.id];
+
+        listingService.updateListing(newTitleListing).then((response) => {
+            if (response.status === 200 && response.data) {
+                listings.updateListing(response.data);
+                updatedListings = [...updatedListings, listing.id];
+            }
+        });
     }
     
     function handleClickRemoveTask(taskId: number, listing: IListing): void {
         const alterTasks: ITask[] = listing.tasks.filter(taskItem => taskItem.id !== taskId);
 
-        const alterListing: IListing = {
-            ...listing,
-            tasks: alterTasks
-        }
+        taskService.removeTask(taskId).then((response) => {
+            if (response.status === 200 && response.data) {
+                const alterListing: IListing = {
+                    ...listing,
+                    tasks: alterTasks
+                };
 
-        listings.updateListing(alterListing);
-        updatedListings = [...updatedListings, listing.id];
+                listings.updateListing(alterListing);
+                updatedListings = [...updatedListings, listing.id];
+            }
+        });
     }
     
     function handleChangeDescription(task: ITask, listing: IListing, ev: Event): void {
         const target = ev.target as HTMLInputElement;
+        console.log(task);
 
         if (target.value.trim() === "") return;
 
@@ -83,21 +91,25 @@
             description: target.value
         };
 
-        const alterTaskListing = listing.tasks.map(taskItem => {
-            if (taskItem.id === task.id) {
-                return task;
+        taskService.updateTask(task).then((response) => {
+            if (response.status === 200 && response.data) {
+                const alterTaskListing = listing.tasks.map(taskItem => {
+                    if (taskItem.id === task.id) {
+                        return task;
+                    }
+
+                    return taskItem;
+                });
+
+                const alterListing: IListing = {
+                    ...listing,
+                    tasks: [...alterTaskListing]
+                }
+
+                listings.updateListing(alterListing);
+                updatedListings = [...updatedListings, listing.id];
             }
-
-            return taskItem;
         });
-
-        const alterListing: IListing = {
-            ...listing,
-            tasks: [...alterTaskListing]
-        }
-
-        listings.updateListing(alterListing);
-        updatedListings = [...updatedListings, listing.id];
     }
     
     function handleChangeDone(task: ITask, listing: IListing): void {
@@ -106,21 +118,25 @@
             done: !task.done
         };
 
-        const alterTaskListing = listing.tasks.map(taskItem => {
-            if (taskItem.id === task.id) {
-                return task;
+        taskService.updateTask(task).then((response) => {
+            if (response.status === 200 && response.data) {
+                const alterTaskListing = listing.tasks.map(taskItem => {
+                    if (taskItem.id === task.id) {
+                        return task;
+                    }
+
+                    return taskItem;
+                });
+
+                const alterListing: IListing = {
+                    ...listing,
+                    tasks: [...alterTaskListing]
+                }
+
+                listings.updateListing(alterListing);
+                updatedListings = [...updatedListings, listing.id];
             }
-
-            return taskItem;
         });
-
-        const alterListing: IListing = {
-            ...listing,
-            tasks: [...alterTaskListing]
-        }
-
-        listings.updateListing(alterListing);
-        updatedListings = [...updatedListings, listing.id];
     }
     
     function handleClickRemoveListing(listingId: number): void {
@@ -128,7 +144,7 @@
     }
     
     function handleClickUpdate(listing: IListing): void {
-        updateListing(listing);
+        updatedListings = updatedListings.filter(updatedListingItem => updatedListingItem !== listing.id);
     }
 
     function update(ev: HTMLInputElement) {
