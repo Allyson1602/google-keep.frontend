@@ -14,6 +14,17 @@
     let isFocused = false;
     let isNewTask = false;
 
+    function addListing(): void {
+        listingService.addListing(newListing).then((response) => {
+            if (response.status === 201 && response.data) {
+                listings.addListing(response.data);
+            }
+        });
+
+        clean();
+        return;
+    }
+
     function getUserId(): number {
         let userId = localStorage.getItem("userid");
 
@@ -33,17 +44,6 @@
             title: '',
             tasks: []
         };
-    }
-
-    function addListing(): void {
-        listingService.addListing(newListing).then((response) => {
-            if (response.status === 201 && response.data) {
-                listings.addListing(response.data);
-            }
-        });
-
-        clean();
-        return;
     }
 
     function handleClickConcluded(): void {
@@ -101,6 +101,7 @@
     function handleClickNewTask(): void {
         const createTask: ITask = {
             id: new Date().getTime(),
+            listing_id: 0,
             description: "",
             done: false
         };
