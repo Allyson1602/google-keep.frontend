@@ -1,3 +1,4 @@
+import type { IAuthKey } from "../../auth.config";
 import ApiRestClient, { type IResponse } from "../axios.config";
 import type { IListing } from "../models/listing.model";
 
@@ -14,7 +15,25 @@ class ListingService extends ApiRestClient implements IListingService {
     };
     
     addListing = (listing: IListing): IResponse<IListing> => {
-        return this.post("listings", listing);
+        return new Promise((resolve, reject) => {
+            this.post<IListing & IAuthKey>("listings", listing)
+                .then((response) => {
+                    if (response.status === 201) {
+                        const authKeyStorage = localStorage.getItem("authKey");
+                        if (!authKeyStorage && response.data.key) {
+                            localStorage.setItem("authKey", response.data.key);
+                        }
+                    }
+
+                    delete response.data.key;
+
+                    console.log(response.data.key);
+                    resolve(response);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
     };
 
     updateListing = (listing: IListing): IResponse<IListing> => {

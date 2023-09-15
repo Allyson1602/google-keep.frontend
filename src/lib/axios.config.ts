@@ -6,11 +6,14 @@ const initializeAxios = (config: AxiosRequestConfig): AxiosInstance => {
     return axios.create(config);
 };
 
+const authKeyStorage = localStorage.getItem("authKey");
+
 const initialConfig: AxiosRequestConfig = {
     baseURL: 'http://localhost:3000',
     responseType: 'json',
     headers: {
         'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': `Bearer ${authKeyStorage}` 
     }
 };
 

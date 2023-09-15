@@ -24,17 +24,6 @@
         clean();
         return;
     }
-
-    function getUserId(): number {
-        let userId = localStorage.getItem("userid");
-
-        if (!userId) {
-            localStorage.setItem("userid", crypto.randomUUID());
-            userId = localStorage.getItem("userid");
-        }
-
-        return parseInt(userId!);
-    }
     
     function clean(): void {
         isFocused = false;
