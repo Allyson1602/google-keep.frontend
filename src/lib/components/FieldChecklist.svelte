@@ -1,6 +1,7 @@
 <script lang="ts">
-    import type { AxiosResponse } from "axios";
-    import type { IListing, ITask } from "../models/listing.model";
+  import { EHttpCode } from "../enums/local-storage.enum";
+    import type { IListing } from "../models/listing.model";
+  import type { ITask } from "../models/task.model";
     import listingService from "../services/listing.service";
     import { listings } from "../store";
     import Icon from "@iconify/svelte";
@@ -8,21 +9,22 @@
 
     let newListing: IListing = {
         id: 0,
+        user_id: 0,
         title: "",
         tasks: []
     };
     let isFocused = false;
     let isNewTask = false;
 
-    function getUserId(): number {
-        let userId = localStorage.getItem("userid");
+    function addListing(): void {
+        listingService.addListing(newListing).then((response) => {
+            if (response.status === EHttpCode.CREATED && response.data) {
+                listings.addListing(response.data);
+            }
+        });
 
-        if (!userId) {
-            localStorage.setItem("userid", crypto.randomUUID());
-            userId = localStorage.getItem("userid");
-        }
-
-        return parseInt(userId!);
+        clean();
+        return;
     }
     
     function clean(): void {
@@ -30,20 +32,10 @@
 
         newListing = {
             id: 0,
+            user_id: 0,
             title: '',
             tasks: []
         };
-    }
-
-    function addListing(): void {
-        listingService.addListing(getUserId(), newListing).then((response: AxiosResponse<IListing>) => {
-            if (response.status === 201 && response.data) {
-                listings.addListing(response.data);
-            }
-        });
-
-        clean();
-        return;
     }
 
     function handleClickConcluded(): void {
@@ -101,6 +93,7 @@
     function handleClickNewTask(): void {
         const createTask: ITask = {
             id: new Date().getTime(),
+            listing_id: 0,
             description: "",
             done: false
         };

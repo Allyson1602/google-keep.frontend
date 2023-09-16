@@ -1,22 +1,82 @@
 <script lang="ts">
     import Icon from '@iconify/svelte';
     import { listings } from "../store";
-    import type { IListing, ITask } from '../models/listing.model';
+    import type { IListing } from '../models/listing.model';
     import listingService from '../services/listing.service';
     import { tick } from 'svelte';
+    import type { ITask } from '../models/task.model';
+    import taskService from '../services/task.service';
+  import { EHttpCode } from '../enums/local-storage.enum';
 
     let isNewTask = false;
     let updatedListings: number[] = [];
 
-    function removeListing(listingId: number) {
-        listingService.removeListing(listingId);
+    function removeListing(listingId: number): void {
+        listingService.removeListing(listingId).then(({ data }) => {
+            if (data) {
+                listings.removeListing(listingId);
+            }
+        });
     }
-    
-    function updateListing(listing: IListing) {
+
+    function updateListing(listing: IListing): void {
         listingService.updateListing(listing).then((response) => {
-            if (response.status === 200 && response.data) {
+            if (response.status === EHttpCode.OK && response.data) {
                 listings.updateListing(response.data);
-                updatedListings = updatedListings.filter(updatedListingItem => updatedListingItem !== listing.id);
+                updatedListings = [...updatedListings, listing.id];
+            }
+        });
+    }
+
+    function addTask(task: ITask, listing: IListing): void {
+        taskService.addTask(task).then(({ data }) => {
+            if (data) {
+                const newTaskListing: IListing = {
+                    ...listing,
+                    tasks: [...listing.tasks, data]
+                };
+
+                listings.updateListing(newTaskListing);
+                updatedListings = [...updatedListings, listing.id];
+                
+                tick();
+                isNewTask = true;
+            }
+        });
+    }
+
+    function updateTask(task: ITask, listing: IListing): void {
+        taskService.updateTask(task).then((response) => {
+            if (response.status === EHttpCode.OK && response.data) {
+                const alterTaskListing = listing.tasks.map(taskItem => {
+                    if (taskItem.id === task.id) {
+                        return task;
+                    }
+
+                    return taskItem;
+                });
+
+                const alterListing: IListing = {
+                    ...listing,
+                    tasks: [...alterTaskListing]
+                }
+
+                listings.updateListing(alterListing);
+                updatedListings = [...updatedListings, listing.id];
+            }
+        });
+    }
+
+    function removeTask(taskId: number, listing: IListing): void {
+        taskService.removeTask(taskId).then((response) => {
+            if (response.status === EHttpCode.OK && response.data) {
+                const alterListing: IListing = {
+                    ...listing,
+                    tasks: listing.tasks.filter(taskItem => taskItem.id !== taskId)
+                };
+
+                listings.updateListing(alterListing);
+                updatedListings = [...updatedListings, listing.id];
             }
         });
     }
@@ -24,45 +84,29 @@
     function handleClickNewTask(listing: IListing): void {
         const createTask: ITask = {
             id: new Date().getTime(),
+            listing_id: listing.id,
             description: "",
             done: false
         };
 
-        const newTaskListing: IListing = {
-            ...listing,
-            tasks: [...listing.tasks, createTask]
-        };
-
-        listings.updateListing(newTaskListing);
-        
-        tick();
-        isNewTask = true;
-        updatedListings = [...updatedListings, listing.id];
+        addTask(createTask, listing);
     }
     
     function handleChangeTitle(listing: IListing, ev: Event): void {
         const target = ev.target as HTMLInputElement;
 
         if (target.value.trim() === "") return;
-
+        
         const newTitleListing: IListing = {
             ...listing,
             title: target.value
         }
-        listings.updateListing(newTitleListing);
-        updatedListings = [...updatedListings, listing.id];
+
+        updateListing(newTitleListing);
     }
     
     function handleClickRemoveTask(taskId: number, listing: IListing): void {
-        const alterTasks: ITask[] = listing.tasks.filter(taskItem => taskItem.id !== taskId);
-
-        const alterListing: IListing = {
-            ...listing,
-            tasks: alterTasks
-        }
-
-        listings.updateListing(alterListing);
-        updatedListings = [...updatedListings, listing.id];
+        removeTask(taskId, listing);
     }
     
     function handleChangeDescription(task: ITask, listing: IListing, ev: Event): void {
@@ -79,21 +123,7 @@
             description: target.value
         };
 
-        const alterTaskListing = listing.tasks.map(taskItem => {
-            if (taskItem.id === task.id) {
-                return task;
-            }
-
-            return taskItem;
-        });
-
-        const alterListing: IListing = {
-            ...listing,
-            tasks: [...alterTaskListing]
-        }
-
-        listings.updateListing(alterListing);
-        updatedListings = [...updatedListings, listing.id];
+        updateTask(task, listing);
     }
     
     function handleChangeDone(task: ITask, listing: IListing): void {
@@ -102,21 +132,7 @@
             done: !task.done
         };
 
-        const alterTaskListing = listing.tasks.map(taskItem => {
-            if (taskItem.id === task.id) {
-                return task;
-            }
-
-            return taskItem;
-        });
-
-        const alterListing: IListing = {
-            ...listing,
-            tasks: [...alterTaskListing]
-        }
-
-        listings.updateListing(alterListing);
-        updatedListings = [...updatedListings, listing.id];
+        updateTask(task, listing);
     }
     
     function handleClickRemoveListing(listingId: number): void {
@@ -124,7 +140,7 @@
     }
     
     function handleClickUpdate(listing: IListing): void {
-        updateListing(listing);
+        updatedListings = updatedListings.filter(updatedListingItem => updatedListingItem !== listing.id);
     }
 
     function update(ev: HTMLInputElement) {
@@ -154,54 +170,56 @@
     
                         <div class="flex flex-col gap-3 mt-4">
                             <div>
-                                {#each listing.tasks.filter(taskItem => !taskItem.done) as task (task.id)}
-                                    <div class="flex justify-between first:mt-0 mt-2 group">
-                                        <div class="flex items-center gap-2">
-                                            <input
-                                                checked={task.done}
-                                                on:change={() => handleChangeDone(task, listing)}
-                                                type="checkbox"
-                                                class="w-4 h-4"
-                                            />
-                                            <input
-                                                use:update
-                                                value={task.description}
-                                                on:change={(ev) => handleChangeDescription(task, listing, ev)}
-                                                class="text-sm bg-systemDark text-systemWhite outline-none"
-                                            />
+                                {#if listing.tasks?.length > 0}
+                                    {#each listing.tasks.filter(taskItem => !taskItem.done) as task (task.id)}
+                                        <div class="flex justify-between first:mt-0 mt-2 group">
+                                            <div class="flex items-center gap-2">
+                                                <input
+                                                    checked={task.done}
+                                                    on:change={() => handleChangeDone(task, listing)}
+                                                    type="checkbox"
+                                                    class="w-4 h-4"
+                                                />
+                                                <input
+                                                    use:update
+                                                    value={task.description}
+                                                    on:change={(ev) => handleChangeDescription(task, listing, ev)}
+                                                    class="text-sm bg-systemDark text-systemWhite outline-none"
+                                                />
+                                            </div>
+                                            
+                                            <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
+                                                <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                                            </button>
                                         </div>
-                                        
-                                        <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
-                                            <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
-                                        </button>
-                                    </div>
-                                {/each}
+                                    {/each}
 
-                                {#if listing.tasks.some(taskItem => taskItem.done) && listing.tasks.some(taskItem => !taskItem.done)}
-                                    <div class="w-full h-[1px] my-3 bg-systemGray/40" />
+                                    {#if listing.tasks.some(taskItem => taskItem.done) && listing.tasks.some(taskItem => !taskItem.done)}
+                                        <div class="w-full h-[1px] my-3 bg-systemGray/40" />
+                                    {/if}
+    
+                                    {#each listing.tasks.filter(taskItem => taskItem.done) as task (task.id)}
+                                        <div class="flex justify-between first:mt-0 mt-2 group">
+                                            <div class="flex items-center gap-2">
+                                                <input
+                                                    checked={task.done}
+                                                    on:change={() => handleChangeDone(task, listing)}
+                                                    type="checkbox"
+                                                    class="w-4 h-4"
+                                                />
+                                                <input
+                                                    value={task.description}
+                                                    on:change={(ev) => handleChangeDescription(task, listing, ev)}
+                                                    class="text-sm bg-systemDark text-systemWhite outline-none"
+                                                />
+                                            </div>
+                                            
+                                            <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
+                                                <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
+                                            </button>
+                                        </div>
+                                    {/each}
                                 {/if}
-
-                                {#each listing.tasks.filter(taskItem => taskItem.done) as task (task.id)}
-                                    <div class="flex justify-between first:mt-0 mt-2 group">
-                                        <div class="flex items-center gap-2">
-                                            <input
-                                                checked={task.done}
-                                                on:change={() => handleChangeDone(task, listing)}
-                                                type="checkbox"
-                                                class="w-4 h-4"
-                                            />
-                                            <input
-                                                value={task.description}
-                                                on:change={(ev) => handleChangeDescription(task, listing, ev)}
-                                                class="text-sm bg-systemDark text-systemWhite outline-none"
-                                            />
-                                        </div>
-                                        
-                                        <button on:click={() => handleClickRemoveTask(task.id, listing)} class="px-1 group-hover:block hidden">
-                                            <Icon icon="ic:round-close" class="text-systemGray" width="20" height="20" />
-                                        </button>
-                                    </div>
-                                {/each}
                             </div>
 
                             <div>
