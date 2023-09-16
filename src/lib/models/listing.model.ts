@@ -2,7 +2,7 @@ import type { ITask } from "./task.model";
 
 export interface IListing {
     id: number;
-    userId: number;
+    user_id: number;
     title: string;
     tasks: ITask[];
 }

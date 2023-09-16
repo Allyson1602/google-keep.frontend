@@ -23,7 +23,7 @@ class ListingService extends ApiRestClient implements IListingService {
                         const authKeyStorage = localStorage.getItem(ELocalStorage.AUTH_KEY);
                         if (!authKeyStorage && response.data.key) {
                             localStorage.setItem(ELocalStorage.AUTH_KEY, response.data.key);
-                            localStorage.setItem(ELocalStorage.USER_ID, (response.data.userId).toString());
+                            localStorage.setItem(ELocalStorage.USER_ID, (response.data.user_id).toString());
                         }
                     }
 
