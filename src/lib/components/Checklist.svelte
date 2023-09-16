@@ -6,6 +6,7 @@
     import { tick } from 'svelte';
     import type { ITask } from '../models/task.model';
     import taskService from '../services/task.service';
+  import { EHttpCode } from '../enums/local-storage.enum';
 
     let isNewTask = false;
     let updatedListings: number[] = [];
@@ -20,7 +21,7 @@
 
     function updateListing(listing: IListing): void {
         listingService.updateListing(listing).then((response) => {
-            if (response.status === 200 && response.data) {
+            if (response.status === EHttpCode.OK && response.data) {
                 listings.updateListing(response.data);
                 updatedListings = [...updatedListings, listing.id];
             }
@@ -46,7 +47,7 @@
 
     function updateTask(task: ITask, listing: IListing): void {
         taskService.updateTask(task).then((response) => {
-            if (response.status === 200 && response.data) {
+            if (response.status === EHttpCode.OK && response.data) {
                 const alterTaskListing = listing.tasks.map(taskItem => {
                     if (taskItem.id === task.id) {
                         return task;
@@ -68,7 +69,7 @@
 
     function removeTask(taskId: number, listing: IListing): void {
         taskService.removeTask(taskId).then((response) => {
-            if (response.status === 200 && response.data) {
+            if (response.status === EHttpCode.OK && response.data) {
                 const alterListing: IListing = {
                     ...listing,
                     tasks: listing.tasks.filter(taskItem => taskItem.id !== taskId)
