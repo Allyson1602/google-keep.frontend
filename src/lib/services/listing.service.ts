@@ -1,17 +1,18 @@
 import type { IAuthKey } from "../../auth.config";
 import ApiRestClient, { type IResponse } from "../axios.config";
+import { ELocalStorage } from "../enums/local-storage.enum";
 import type { IListing } from "../models/listing.model";
 
 export interface IListingService {
-    listListings: () => IResponse<IListing[]>;
+    listListings: (id: number) => IResponse<IListing[]>;
     addListing: (listing: IListing) => IResponse<IListing>;
     updateListing: (listing: IListing) => IResponse<IListing>;
     removeListing: (id: number) => IResponse<boolean>;
 }
 
 class ListingService extends ApiRestClient implements IListingService {
-    listListings = (): IResponse<IListing[]> => {
-        return this.get("listings");
+    listListings = (id: number): IResponse<IListing[]> => {
+        return this.get("listings", { id });
     };
     
     addListing = (listing: IListing): IResponse<IListing> => {
@@ -19,15 +20,17 @@ class ListingService extends ApiRestClient implements IListingService {
             this.post<IListing & IAuthKey>("listings", listing)
                 .then((response) => {
                     if (response.status === 201) {
-                        const authKeyStorage = localStorage.getItem("authKey");
+                        const authKeyStorage = localStorage.getItem(ELocalStorage.AUTH_KEY);
                         if (!authKeyStorage && response.data.key) {
-                            localStorage.setItem("authKey", response.data.key);
+                            localStorage.setItem(ELocalStorage.AUTH_KEY, response.data.key);
+                            localStorage.setItem(ELocalStorage.USER_ID, (response.data.userId).toString());
                         }
                     }
 
+                    console.log(response.data);
                     delete response.data.key;
+                    console.log(response.data);
 
-                    console.log(response.data.key);
                     resolve(response);
                 })
                 .catch((error) => {

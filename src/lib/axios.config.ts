@@ -1,4 +1,5 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
+import { ELocalStorage } from "./enums/local-storage.enum";
 
 export type IResponse<T> = Promise<AxiosResponse<T>>;
 
@@ -6,14 +7,14 @@ const initializeAxios = (config: AxiosRequestConfig): AxiosInstance => {
     return axios.create(config);
 };
 
-const authKeyStorage = localStorage.getItem("authKey");
+const authKeyStorage = localStorage.getItem(ELocalStorage.AUTH_KEY);
 
 const initialConfig: AxiosRequestConfig = {
     baseURL: 'http://localhost:3000',
     responseType: 'json',
     headers: {
         'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': `Bearer ${authKeyStorage}` 
+        'Authorization': authKeyStorage ? `Bearer ${authKeyStorage}` : undefined
     }
 };
 

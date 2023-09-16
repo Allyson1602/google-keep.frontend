@@ -8,6 +8,7 @@
 
     let newListing: IListing = {
         id: 0,
+        userId: 0,
         title: "",
         tasks: []
     };
@@ -30,6 +31,7 @@
 
         newListing = {
             id: 0,
+            userId: 0,
             title: '',
             tasks: []
         };
