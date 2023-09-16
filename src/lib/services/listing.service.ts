@@ -1,6 +1,6 @@
 import type { IAuthKey } from "../../auth.config";
 import ApiRestClient, { type IResponse } from "../axios.config";
-import { ELocalStorage } from "../enums/local-storage.enum";
+import { EHttpCode, ELocalStorage } from "../enums/local-storage.enum";
 import type { IListing } from "../models/listing.model";
 
 export interface IListingService {
@@ -19,7 +19,7 @@ class ListingService extends ApiRestClient implements IListingService {
         return new Promise((resolve, reject) => {
             this.post<IListing & IAuthKey>("listings", listing)
                 .then((response) => {
-                    if (response.status === 201) {
+                    if (response.status === EHttpCode.CREATED) {
                         const authKeyStorage = localStorage.getItem(ELocalStorage.AUTH_KEY);
                         if (!authKeyStorage && response.data.key) {
                             localStorage.setItem(ELocalStorage.AUTH_KEY, response.data.key);
@@ -27,9 +27,7 @@ class ListingService extends ApiRestClient implements IListingService {
                         }
                     }
 
-                    console.log(response.data);
                     delete response.data.key;
-                    console.log(response.data);
 
                     resolve(response);
                 })

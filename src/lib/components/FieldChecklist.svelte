@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { EHttpCode } from "../enums/local-storage.enum";
     import type { IListing } from "../models/listing.model";
   import type { ITask } from "../models/task.model";
     import listingService from "../services/listing.service";
@@ -17,7 +18,7 @@
 
     function addListing(): void {
         listingService.addListing(newListing).then((response) => {
-            if (response.status === 201 && response.data) {
+            if (response.status === EHttpCode.CREATED && response.data) {
                 listings.addListing(response.data);
             }
         });
