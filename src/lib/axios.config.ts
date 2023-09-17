@@ -49,7 +49,7 @@ class ApiRestClient implements IApiRestClient {
         return axiosInstance.patch<T>(url, body, { params: queryParams });
     }
 
-    delete = <T>(url: string, id: number): IResponse<T> => {
+    delete = <T>(url: string, id: number | string): IResponse<T> => {
         return axiosInstance.delete<T>(`${url}/${id}` );
     }
 }

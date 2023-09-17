@@ -5,7 +5,7 @@ export interface ITaskService {
     listTasks: () => IResponse<ITask[]>;
     addTask: (task: ITask) => IResponse<ITask>;
     updateTask: (task: ITask) => IResponse<ITask>;
-    removeTask: (id: number) => IResponse<boolean>;
+    removeTask: (id: string) => IResponse<boolean>;
 }
 
 class TaskService extends ApiRestClient implements ITaskService {
@@ -21,7 +21,7 @@ class TaskService extends ApiRestClient implements ITaskService {
         return this.patch(`tasks/${task.id}`, task);
     };
 
-    removeTask = (id: number): IResponse<boolean> => {
+    removeTask = (id: string): IResponse<boolean> => {
         return this.delete("tasks", id);
     };
 }

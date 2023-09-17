@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { EHttpCode } from "../enums/local-storage.enum";
+  import { EHttpCode, ELocalStorage } from "../enums/local-storage.enum";
     import type { IListing } from "../models/listing.model";
   import type { ITask } from "../models/task.model";
     import listingService from "../services/listing.service";
@@ -7,9 +7,11 @@
     import Icon from "@iconify/svelte";
     import { tick } from "svelte";
 
+    const userIdStorage = localStorage.getItem(ELocalStorage.USER_ID);
+        
     let newListing: IListing = {
         id: 0,
-        user_id: 0,
+        user: userIdStorage ? parseInt(userIdStorage) : 0,
         title: "",
         tasks: []
     };
@@ -32,7 +34,7 @@
 
         newListing = {
             id: 0,
-            user_id: 0,
+            user: userIdStorage ? parseInt(userIdStorage) : 0,
             title: '',
             tasks: []
         };
@@ -53,7 +55,7 @@
         }
     }
     
-    function handleClickRemoveTask(taskId: number): void {
+    function handleClickRemoveTask(taskId: string): void {
         const alterTasks: ITask[] = newListing.tasks.filter(taskItem => taskItem.id !== taskId);
 
         newListing = {
@@ -92,8 +94,8 @@
     
     function handleClickNewTask(): void {
         const createTask: ITask = {
-            id: new Date().getTime(),
-            listing_id: 0,
+            id: self.crypto.randomUUID(),
+            listing: 0,
             description: "",
             done: false
         };

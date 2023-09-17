@@ -12,7 +12,30 @@ export interface IListingService {
 
 class ListingService extends ApiRestClient implements IListingService {
     listListings = (id: number): IResponse<IListing[]> => {
-        return this.get("listings", { id });
+        return new Promise((resolve, reject) => {
+            this.get<IListing[]>(`listings/${id}`)
+            .then((response) => {
+                const data = response.data = response.data.map((listingItem) => {
+                    const tasksList = listingItem.tasks = listingItem.tasks.map((taskItem) => {
+                        return {
+                            ...taskItem,
+                            listing: (taskItem.listing as unknown as IListing).id
+                        }
+                    });
+
+                    return {
+                        ...listingItem,
+                        tasks: tasksList
+                    }
+                });
+                
+                response.data = data;
+                resolve(response);
+            })
+            .catch((error) => {
+                reject(error);
+            });
+        });
     };
     
     addListing = (listing: IListing): IResponse<IListing> => {
@@ -23,7 +46,7 @@ class ListingService extends ApiRestClient implements IListingService {
                         const authKeyStorage = localStorage.getItem(ELocalStorage.AUTH_KEY);
                         if (!authKeyStorage && response.data.key) {
                             localStorage.setItem(ELocalStorage.AUTH_KEY, response.data.key);
-                            localStorage.setItem(ELocalStorage.USER_ID, (response.data.user_id).toString());
+                            localStorage.setItem(ELocalStorage.USER_ID, (response.data.user).toString());
                         }
                     }
 

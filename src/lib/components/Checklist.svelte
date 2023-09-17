@@ -6,14 +6,15 @@
     import { tick } from 'svelte';
     import type { ITask } from '../models/task.model';
     import taskService from '../services/task.service';
-  import { EHttpCode } from '../enums/local-storage.enum';
+    import { EHttpCode } from '../enums/local-storage.enum';
+  
 
     let isNewTask = false;
     let updatedListings: number[] = [];
 
     function removeListing(listingId: number): void {
-        listingService.removeListing(listingId).then(({ data }) => {
-            if (data) {
+        listingService.removeListing(listingId).then((response) => {
+            if (response.status === EHttpCode.OK && response.data) {
                 listings.removeListing(listingId);
             }
         });
@@ -29,11 +30,11 @@
     }
 
     function addTask(task: ITask, listing: IListing): void {
-        taskService.addTask(task).then(({ data }) => {
-            if (data) {
+        taskService.addTask(task).then((response) => {
+            if (response.status === EHttpCode.CREATED && response.data) {
                 const newTaskListing: IListing = {
                     ...listing,
-                    tasks: [...listing.tasks, data]
+                    tasks: [...listing.tasks, response.data]
                 };
 
                 listings.updateListing(newTaskListing);
@@ -67,7 +68,7 @@
         });
     }
 
-    function removeTask(taskId: number, listing: IListing): void {
+    function removeTask(taskId: string, listing: IListing): void {
         taskService.removeTask(taskId).then((response) => {
             if (response.status === EHttpCode.OK && response.data) {
                 const alterListing: IListing = {
@@ -83,8 +84,8 @@
     
     function handleClickNewTask(listing: IListing): void {
         const createTask: ITask = {
-            id: new Date().getTime(),
-            listing_id: listing.id,
+            id: self.crypto.randomUUID(),
+            listing: listing.id,
             description: "",
             done: false
         };
@@ -105,7 +106,7 @@
         updateListing(newTitleListing);
     }
     
-    function handleClickRemoveTask(taskId: number, listing: IListing): void {
+    function handleClickRemoveTask(taskId: string, listing: IListing): void {
         removeTask(taskId, listing);
     }
     
