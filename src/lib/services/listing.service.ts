@@ -1,5 +1,5 @@
 import type { IAuthKey } from "../../auth.config";
-import ApiRestClient, { type IResponse } from "../axios.config";
+import ApiRestClient, { axiosInstance, type IResponse } from "../axios.config";
 import { EHttpCode, ELocalStorage } from "../enums/local-storage.enum";
 import type { IListing } from "../models/listing.model";
 
@@ -47,6 +47,8 @@ class ListingService extends ApiRestClient implements IListingService {
                         if (!authKeyStorage && response.data.key) {
                             localStorage.setItem(ELocalStorage.AUTH_KEY, response.data.key);
                             localStorage.setItem(ELocalStorage.USER_ID, (response.data.user).toString());
+                            
+                            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.key}`;
                         }
                     }
 

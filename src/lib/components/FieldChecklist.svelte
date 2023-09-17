@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { EHttpCode, ELocalStorage } from "../enums/local-storage.enum";
+    import { EHttpCode, ELocalStorage } from "../enums/local-storage.enum";
     import type { IListing } from "../models/listing.model";
-  import type { ITask } from "../models/task.model";
+    import type { ITask } from "../models/task.model";
     import listingService from "../services/listing.service";
     import { listings } from "../store";
     import Icon from "@iconify/svelte";

@@ -7,18 +7,20 @@ const initializeAxios = (config: AxiosRequestConfig): AxiosInstance => {
     return axios.create(config);
 };
 
-const authKeyStorage = localStorage.getItem(ELocalStorage.AUTH_KEY);
-
 const initialConfig: AxiosRequestConfig = {
     baseURL: 'http://localhost:3000',
     responseType: 'json',
     headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': authKeyStorage ? `Bearer ${authKeyStorage}` : undefined
+        'Content-Type': 'application/json; charset=utf-8'
     }
 };
 
-const axiosInstance = initializeAxios(initialConfig);
+const authKeyStorage = localStorage.getItem(ELocalStorage.AUTH_KEY);
+if (authKeyStorage && initialConfig.headers) {
+    initialConfig.headers.Authorization = `Bearer ${authKeyStorage}`;
+}
+
+export const axiosInstance = initializeAxios(initialConfig);
 
 export interface IApiRestClient {
     get: <T>(url: string, queryParams?: object) => IResponse<T>;
