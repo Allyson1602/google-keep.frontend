@@ -39,6 +39,11 @@ class ListingService extends ApiRestClient implements IListingService {
     };
     
     addListing = (listing: IListing): IResponse<IListing> => {
+        const userIdStorage = localStorage.getItem(ELocalStorage.USER_ID);
+        if (userIdStorage) {
+            listing.user = parseInt(userIdStorage);
+        }
+
         return new Promise((resolve, reject) => {
             this.post<IListing & IAuthKey>("listings", listing)
                 .then((response) => {
